@@ -3,15 +3,24 @@
 # Go to wallet directory
 cd /app/wallet
 
+# Get Linux kernel architecture
+if uname -a | grep "x86_64"
+then
+    ARCH="x86_64"
+else
+    ARCH="ARM64"
+fi
+WASPCLI="wasp-cli_0.5.0-alpha.6_Linux_${ARCH}"
+
 # Install wasp's command line wallet
 if ! command -v wasp-cli &> /dev/null
 then
     echo "Installing wasp-cli"
-    wget 'https://github.com/iotaledger/wasp/releases/download/v0.5.0-alpha.6/wasp-cli_0.5.0-alpha.6_Linux_x86_64.tar.gz'
-    gunzip 'wasp-cli_0.5.0-alpha.6_Linux_x86_64.tar.gz'
-    tar -xvf 'wasp-cli_0.5.0-alpha.6_Linux_x86_64.tar'
-    mv 'wasp-cli_0.5.0-alpha.6_Linux_x86_64/wasp-cli' /usr/bin
-    rm -r 'wasp-cli_0.5.0-alpha.6_Linux_x86_64' 'wasp-cli_0.5.0-alpha.6_Linux_x86_64.tar'
+    wget "https://github.com/iotaledger/wasp/releases/download/v0.5.0-alpha.6/${WASPCLI}.tar.gz"
+    gunzip "${WASPCLI}.tar.gz"
+    tar -xvf "${WASPCLI}.tar"
+    mv "${WASPCLI}/wasp-cli" /usr/bin
+    rm -r "${WASPCLI}" "${WASPCLI}.tar"
 fi
 
 # Initialize wallet
