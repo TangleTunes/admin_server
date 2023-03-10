@@ -1,9 +1,5 @@
 FROM node:19
 
-# Set Smart Contract working directory
-RUN mkdir /tangletunes
-COPY abi.json /tangletunes/
-
 # Set Web Application working directory
 RUN mkdir /app
 RUN mkdir /app/wallet
