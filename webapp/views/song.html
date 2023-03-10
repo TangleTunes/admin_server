@@ -1,0 +1,33 @@
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+
+<script>
+async function get_provider() {
+    if (window.ethereum) {
+        await window.ethereum.request({method: 'eth_requestAccounts'});
+        window.web3 = new Web3(window.ethereum);
+        alert('working')
+    }
+}
+
+function upload() {
+    if (!window.web3) {
+        get_provider()
+    }
+    alert('Form submitted ' + document.getElementById('contract').value);
+}
+</script>
+
+<form onsubmit="upload()" id="form">
+    <label for="contract">Contract address</label><br>
+    <input id="contract" name="contract" type="text"></input><br>
+    <label for="key">Deployer's private key</label><br>
+    <input id="key" name="key" type="text"></input><br>
+    <br>
+    <label for="name">Name</label><br>
+    <input id="name" name="name" type="text"></input><br>
+    <label for="price">Price</label><br>
+    <input id="price" name="price" type="number"></input><br>
+    <label for="file">File</label><br>
+    <input id="file" name="file" type="file"></input><br>
+    <input type="submit" value="Submit">
+  </form>
