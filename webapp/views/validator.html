@@ -1,21 +1,5 @@
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-
-<script>
-async function get_provider() {
-    if (window.ethereum) {
-        await window.ethereum.request({method: 'eth_requestAccounts'});
-        window.web3 = new Web3(window.ethereum);
-        alert('working')
-    }
-}
-
-function upload() {
-    if (!window.web3) {
-        get_provider()
-    }
-    alert('Form submitted ' + document.getElementById('contract').value);
-}
-</script>
+<script src="/static/js/validator.js"></script>
 
 <form onsubmit="upload()" id="form">
     <label for="contract">Contract address</label><br>
