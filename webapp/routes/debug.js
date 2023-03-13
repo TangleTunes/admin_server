@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const { ethers }   = require('ethers');
 const express      = require('express');
 const fs           = require('fs');
@@ -15,12 +15,8 @@ router.get('/info', async (req, res) => {
 })
 
 router.get('/faucet/:addr', async (req, res) => {
-    try {
-        execSync(`/bin/bash /app/scripts/request-funds.sh ${req.params.addr}`)
-        res.json({"error": ""});
-    } catch (err) {
-        res.json({"error": err.stderr.toString()});
-    }
+    process = spawnSync("/bin/bash", ["/app/scripts/request-funds.sh", req.params.addr]);
+    res.json({"error": process.stderr.toString()})
 })
 
 router.get('/history', async (req, res) => {
