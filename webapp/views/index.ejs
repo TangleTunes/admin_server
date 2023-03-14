@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TangleTunes</title>
+  </head>
+  <body>
+    <h1>Welcome to TangleTunes</h1>
+    <h4>Please connect to the network to continue:
+    <form action="/" onsubmit="login(this); return false;" method="POST">
+      <input type="hidden" name="signature" id="signature">
+      <input type="hidden" id="nonce" value="<%= nonce %>">
+      <button type="submit">Connect</button>
+    </form>
+    
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="/static/js/main.js"></script>
+  </body>
+</html>

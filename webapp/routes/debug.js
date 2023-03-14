@@ -1,14 +1,12 @@
 const { spawnSync } = require('child_process');
 const { ethers }   = require('ethers');
 const express      = require('express');
-const fs           = require('fs');
 
 const router = express.Router();
 
 router.get('/info', async (req, res) => {
-    let chainID = JSON.parse(fs.readFileSync('/app/wallet/wasp-cli.json')).chains.tangletunes
     return res.json({
-        "json-rpc": `http://127.0.0.1:9090/chains/${chainID}/evm`,
+        "json-rpc": `http://127.0.0.1:9090/chains/${process.env.CHAIN_ID}/evm`,
         "chainID": 1074,
         "smart-contract": "TBD"
     });
@@ -20,8 +18,7 @@ router.get('/faucet/:addr', async (req, res) => {
 })
 
 router.get('/history', async (req, res) => {
-    const chainID = JSON.parse(fs.readFileSync('/app/wallet/wasp-cli.json')).chains.tangletunes
-    const provider = new ethers.JsonRpcProvider(`http://wasp:9090/chains/${chainID}/evm`, 1074)
+    const provider = new ethers.JsonRpcProvider(`http://wasp:9090/chains/${process.env.CHAIN_ID}/evm`, 1074)
     const transactions = await provider.getBlock('latest').then(block => block.transactions);
     const txData = await Promise.all(transactions.map(async txHash => {
         const tx = await provider.getTransaction(txHash);

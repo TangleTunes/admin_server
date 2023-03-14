@@ -11,4 +11,9 @@ let contract = new ethers.Contract(req.body.contract, abi, signer)
 let user = await contract.users(signer.address)
 */
 
+router.get('/contract/set/:address', (req, res) => {
+    process.env.CONTRACT = req.params.address
+    res.json({"contract": process.env.CONTRACT})
+});
+
 module.exports = router;

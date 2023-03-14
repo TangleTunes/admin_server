@@ -1,26 +1,31 @@
-const { execSync } = require('child_process');
-const bodyParser   = require('body-parser');
-const express      = require('express');
-const path         = require('path');
-const http         = require('http');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const { execSync }  = require('child_process');
+const cookieSession = require('cookie-session')
+const bodyParser    = require('body-parser');
+const express       = require('express');
+const crypto        = require('crypto');
+const path          = require('path');
+const http          = require('http');
+const fs            = require('fs');
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.set('view engine', 'ejs');
+
+app.use(cookieSession({
+  name: 'session',
+  keys: [crypto.randomBytes(64)],
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 app.use('/static', express.static(path.resolve('static')));
 
 app.use('/admin', require('./routes/admin'));
 app.use('/validator', require('./routes/validator'));
 app.use('/debug', require('./routes/debug'));
-
-app.all('/', (req, res) => res.redirect('/validator'));
-
-app.all('*', (req, res) => {
-	return res.status(404).send({
-		message: '404 page not found'
-	});
-});
+app.use('/', require('./routes/index'));
 
 async function waitForWasp() {
   // wait one second
@@ -39,5 +44,20 @@ async function waitForWasp() {
 console.log('Waiting for wasp to start...');
 (async () => await waitForWasp())()
 execSync('/bin/bash /app/scripts/create-wallet.sh');
+
+//Proxy traffic to chain's JSON-RPC url
+process.env.CHAIN_ID = JSON.parse(fs.readFileSync('/app/wallet/wasp-cli.json')).chains.tangletunes
+app.use("/evm", createProxyMiddleware({
+  target: `http://wasp:9090/chains/${process.env.CHAIN_ID}`
+}));
+
+
+process.env.CONTRACT = "0x8fA1fc1Eec824a36fD31497EAa8716Fc9C446d51" //TODO: Remove
+
+app.all('*', (req, res) => {
+	return res.status(404).send({
+		message: '404 page not found'
+	});
+});
 
 app.listen(3000, () => console.log('Server started on port 3000'));

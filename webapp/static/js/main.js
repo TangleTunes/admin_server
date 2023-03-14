@@ -2,6 +2,15 @@ const CHUNK_SIZE = 30000
 let web3
 let contract
 
+async function login(form) {
+    let addr = (await web3.eth.getAccounts())[0]
+    let nonce = document.getElementById("nonce").value
+    try {
+        document.getElementById("signature").value = await web3.eth.personal.sign(nonce, addr)
+        if (form) form.submit()
+    } catch {}
+}
+
 async function connect() {
     let addr = document.getElementById('contract').value
     let abi = await fetch('/static/abi.json').then(res => res.json())
