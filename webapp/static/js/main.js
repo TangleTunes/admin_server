@@ -111,8 +111,19 @@ async function upload() {
 
 
 if (window.ethereum) {
+    //Request access to Metamask accounts
     window.ethereum.request({method: 'eth_requestAccounts'})
+    //Create provider object connected to Metamask
     web3 = new Web3(window.ethereum)
+    //Reload web application when wallet account changes
+    window.ethereum.on('accountsChanged', function () {
+        //Clear cookies: https://stackoverflow.com/questions/179355/clearing-all-cookies-with-javascript
+        document.cookie.split(";").forEach(function(c) {
+            document.cookie = c.replace(/^ +/,"").replace(/=.*/,"=;expires="+new Date().toUTCString()+";path=/"); 
+        });
+        //Reload page
+        window.location.reload()
+      })
 } else {
     alert('Metamask is not connected to tangletunes')
 }

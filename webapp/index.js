@@ -15,9 +15,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
 app.use(cookieSession({
-  name: 'session',
-  keys: [crypto.randomBytes(64)],
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    name: 'session',
+    keys: [crypto.randomBytes(64)],
+    httpOnly: false,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 
 app.use('/static', express.static(path.resolve('static')));
