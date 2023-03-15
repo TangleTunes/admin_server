@@ -6,9 +6,9 @@ const router = express.Router();
 
 router.get('/info', async (req, res) => {
     return res.json({
-        "json-rpc": `http://127.0.0.1:9090/chains/${process.env.CHAIN_ID}/evm`,
+        "json-rpc": `http://${req.headers.host}:9090/chains/${process.env.CHAIN_ID}/evm`,
         "chainID": 1074,
-        "smart-contract": "TBD"
+        "smart-contract": process.env.CONTRACT
     });
 })
 

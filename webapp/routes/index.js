@@ -11,12 +11,12 @@ router.get('/', async (req, res) => {
         const user = await get_user(req.session.address)
         //TODO: check if it is deployer and redirect to /admin
         //Create new account if it doesn't have
-        if (!user["exists"]) {
+        if (!user.exists) {
             //TODO: page to create user account
             return res.end("You are not a user of TangleTunes, please create an account.")
         }
         //Request song uploads
-        if (!user["is_validator"]) {
+        if (!user.is_validator) {
             //TODO: page to request song uploads
             return res.end(`Welcome to TangleTunes, ${sanitizeHtml(user["username"])}. Request a song upload`)
         }

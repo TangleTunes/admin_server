@@ -1,4 +1,4 @@
-const CHUNK_SIZE = 30000
+const CHUNK_SIZE = 32500
 let web3
 let contract
 
@@ -11,40 +11,19 @@ async function login(form) {
     } catch {}
 }
 
-async function connect() {
-    let addr = document.getElementById('contract').value
-    let abi = await fetch('/static/abi.json').then(res => res.json())
-    contract = new web3.eth.Contract(abi, addr);
-    load_user()
-}
-
-async function load_user() {
-    let addr = (await window.ethereum.request({ method: 'eth_requestAccounts' }))[0]
-    let user = await contract.methods.users(addr).call()
-    if (!user.exists) {
-        document.getElementById('user_info').innerHTML = 'You do not have a user account'
-    } else if (!user.is_validator) {
-        document.getElementById('user_info').innerHTML = 'You are not a validator'
-    } else {
-        document.getElementById('user_info').innerHTML = `<p><b>Name:</b> ${user.username}</p>\n<p><b>Desc:</b> ${user.description}</p>\n<p><b>Balance:</b> ${user.balance}</p>\n`
-    }
-}
-
 async function get_chunks(file) {
     const chunks = [];
   
     // Read the file in chunks
     for (let i = 0; i < file.size; i += CHUNK_SIZE) {
-      const reader = new FileReader();
-      await new Promise(resolve => reader.addEventListener("load", resolve));
-      reader.readAsArrayBuffer(file.slice(i, i + CHUNK_SIZE));
-      const chunk_buffer = new Uint8Array(reader.result);
+        // Load chunk
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(file.slice(i, i + CHUNK_SIZE));
+        await new Promise(resolve => reader.addEventListener("load", resolve));
   
-      // Compute keccak hash value
-      const hash = await window.crypto.subtle.digest("SHA3-256", chunk_buffer);
-      const hashArray = Array.from(new Uint8Array(hash));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      chunks.push(hashHex);
+        // Compute keccak hash value
+        const hash = web3.utils.soliditySha3(new Uint8Array(reader.result));
+        chunks.push(hash);
     }
   
     return chunks;
@@ -64,13 +43,18 @@ async function get_upload_values() {
     let file = document.getElementById('file').files[0]
     let length = file.size
     let duration = await get_duration(file)
-    let chunks = get_chunks(file)
+    let chunks = await get_chunks(file)
 
     return { name, price, length, duration, chunks }
 }
 
 async function upload() {
-    let author = (await window.ethereum.request({ method: 'eth_requestAccounts' }))[0]
+    const addr = document.getElementById('contract').value
+    const abi = await fetch('/static/abi.json').then(res => res.json())
+    const contract = new web3.eth.Contract(abi, addr);
+
+    let author = (await web3.eth.getAccounts())[0]
+    document.getElementById('song_info').innerHTML = "Processing song..."
     let song = await get_upload_values()
     document.getElementById('song_info').innerHTML = `
         <p><b>Author:</b> ${author}</p>
@@ -88,7 +72,9 @@ async function upload() {
         song.length,
         song.duration,
         song.chunks
-    ).send()
+    ).send({
+        from: (await web3.eth.getAccounts())[0]
+    })
 }
 
 

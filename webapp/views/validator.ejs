@@ -4,20 +4,10 @@
     <title>Validator</title>
   </head>
   <body>
-    <h1>Connect to TangleTunes</h1>
-    <form>
-      <label for="contract">Contract address</label><br>
-      <input id="contract" type="text"></input><br>
-      <br>
-      <button type="button" onclick="connect()">Connect</button>
-    </form>
-    <br><br>
-    <h1>Your user info</h1>
-    <div id="user_info">
-    </div>
-    <br><br>
+    <h1>Welcome <%= username %></h1>
     <h1>Upload a song to TangleTunes</h1>
     <form>
+      <input id="contract" type="hidden" value="<%= contract %>">
       <label for="name">Name</label><br>
       <input id="name" type="text"></input><br>
       <label for="price">Price</label><br>
@@ -29,6 +19,7 @@
     </form>
     <div id="song_info">
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script src="/static/js/main.js"></script>
   </body>
