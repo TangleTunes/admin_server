@@ -12,8 +12,7 @@ router.get('/', async (req, res) => {
         //TODO: check if it is deployer and redirect to /admin
         //Create new account if it doesn't have
         if (!user.exists) {
-            //TODO: page to create user account
-            return res.end("You are not a user of TangleTunes, please create an account.")
+            return res.redirect('/validator/register')
         }
         //Request song uploads
         if (!user.is_validator) {

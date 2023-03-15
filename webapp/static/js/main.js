@@ -3,12 +3,44 @@ let web3
 let contract
 
 async function login(form) {
-    let addr = (await web3.eth.getAccounts())[0]
-    let nonce = document.getElementById("nonce").value
+    const addr = (await web3.eth.getAccounts())[0]
+    const nonce = document.getElementById("nonce").value
     try {
         document.getElementById("signature").value = await web3.eth.personal.sign(nonce, addr)
-        if (form) form.submit()
+        if (form) {
+            form.submit()
+        }
     } catch {}
+}
+
+async function refresh_balance() {
+    const balance = await web3.eth.getBalance((await web3.eth.getAccounts())[0])
+    document.getElementById("balance").innerHTML = `Your current balance is <b>${balance}<\b>`
+}
+
+async function request_funds() {
+    const button = document.getElementById("request_button")
+    button.innerText = "Requesting..."
+
+    await fetch(`/debug/faucet/${(await web3.eth.getAccounts())[0]}`)
+    button.innerText = "Requested"
+    button.disabled = true
+}
+
+async function register() {
+    const addr = document.getElementById('contract').value
+    const abi = await fetch('/static/abi.json').then(res => res.json())
+    const contract = new web3.eth.Contract(abi, addr);
+
+    await contract.methods.create_user(
+        document.getElementById("username").value,
+        document.getElementById("description").value,
+    ).send({
+        from: (await web3.eth.getAccounts())[0]
+    })
+
+    //Reload Page to be redirected
+    window.location.reload()
 }
 
 async function get_chunks(file) {
@@ -53,8 +85,8 @@ async function upload() {
     const abi = await fetch('/static/abi.json').then(res => res.json())
     const contract = new web3.eth.Contract(abi, addr);
 
-    let author = (await web3.eth.getAccounts())[0]
     document.getElementById('song_info').innerHTML = "Processing song..."
+    let author = document.getElementById('author').value
     let song = await get_upload_values()
     document.getElementById('song_info').innerHTML = `
         <p><b>Author:</b> ${author}</p>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Validator</title>
+  </head>
+  <body onload="refresh_balance()">
+    <h1>Welcome to TangleTunes</h1>
+    <br><br>
+    <div id="balance"></div>
+    <button id="request_button" type="button" onclick="request_funds()">Request funds</button>
+    <br><br>
+    <form>
+      <input id="contract" type="hidden" value="<%= contract %>">
+      <label for="username">Username</label><br>
+      <input id="username" type="text"></input><br>
+      <label for="description">Description</label><br>
+      <input id="description" type="text"></input><br>
+      <br>
+      <button type="button" onclick="register()">Register</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="/static/js/main.js"></script>
+  </body>
+</html>
