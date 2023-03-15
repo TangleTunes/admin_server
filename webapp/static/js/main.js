@@ -79,7 +79,7 @@ async function upload() {
 
 
 if (window.ethereum) {
-    await ethereum.request({method: 'eth_requestAccounts'})
+    ethereum.request({method: 'eth_requestAccounts'})
     web3 = new Web3(window.ethereum)
 } else {
     alert('Metamask is not connected to tangletunes')
