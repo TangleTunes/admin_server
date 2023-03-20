@@ -6,19 +6,29 @@
   <body>
     <h1>Welcome <%= username %></h1>
     <h1>Upload a song to TangleTunes</h1>
-    <form>
-      <input id="contract" type="hidden" value="<%= contract %>">
-      <label for="author">Author</label><br>
-      <input id="author" type="text"></input><br>
-      <label for="name">Name</label><br>
-      <input id="name" type="text"></input><br>
-      <label for="price">Price</label><br>
-      <input id="price" type="number"></input><br>
-      <label for="file">File</label><br>
-      <input id="file" type="file" accept="data"></input><br>
-      <br>
-      <button type="button" onclick="upload()">Upload</button>
-    </form>
+    
+    <br>
+    <div>
+      <% Object.keys(songs).forEach( function(id) { %>
+        <div>
+          <form action="/validator/validate" onsubmit="upload(this, event.submitter.value); return false;" method="POST">
+            <input id="contract" type="hidden" value="<%= contract %>">
+            <b>ID: </b><input id="id" name="id" type="text" value="<%= id %>" readonly><br>
+            <b>Author: </b><input id="author" type="text" value="<%= songs[id].author %>" readonly><br>
+            <b>Name: </b><input id="name" type="text" value="<%= songs[id].name %>" readonly><br>
+            <b>Price: </b><input id="price" type="number" value="<%= songs[id].price %>" readonly><br>
+            <br>
+            <audio controls src="/static/uploads/<%= id %>"></audio>
+            <br>
+            <button name="is_approved" type="submit" value="true">Approve</button>
+            <button name="is_approved" type="submit" value="false">Reject</button>
+          </form>
+        </div>
+        <br>
+      <% }); %>
+    </div>
+    <br>
+
     <div id="song_info">
     </div>
 

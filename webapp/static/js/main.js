@@ -8,7 +8,7 @@ async function login(form) {
     try {
         document.getElementById("signature").value = await web3.eth.personal.sign(nonce, addr)
         if (form) {
-            form.submit()
+            return form.submit()
         }
     } catch {}
 }
@@ -43,51 +43,39 @@ async function register() {
     window.location.reload()
 }
 
-async function get_chunks(file) {
+function get_chunks(buffer, len) {
     const chunks = [];
-  
-    // Read the file in chunks
-    for (let i = 0; i < file.size; i += CHUNK_SIZE) {
-        // Load chunk
-        const reader = new FileReader();
-        reader.readAsArrayBuffer(file.slice(i, i + CHUNK_SIZE));
-        await new Promise(resolve => reader.addEventListener("load", resolve));
-  
+    for (let i = 0; i < len; i += CHUNK_SIZE) {
+        // Get chunk as hex string
+        const chunk_buf = buffer.slice(i, i + CHUNK_SIZE)
+        const chunk = '0x'+[...new Uint8Array(chunk_buf)].map(x => x.toString(16).padStart(2,'0')).join('')
         // Compute keccak hash value
-        const hash = web3.utils.soliditySha3(new Uint8Array(reader.result));
-        chunks.push(hash);
+        chunks.push(web3.utils.soliditySha3(chunk));
     }
-  
     return chunks;
 }
 
-function get_duration(file) {
-    return new Promise((resolve, reject) => {
-        const audio = new Audio(URL.createObjectURL(file));
-        audio.addEventListener('loadedmetadata', () => resolve(Math.ceil(audio.duration)));
-        audio.addEventListener('error', () => reject(new Error('Error loading MP3 file')));
-    });
-}
-
-async function get_upload_values() {
-    let name = document.getElementById('name').value
-    let price = document.getElementById('price').value
-    let file = document.getElementById('file').files[0]
-    let length = file.size
-    let duration = await get_duration(file)
-    let chunks = await get_chunks(file)
-
+async function get_upload_values(form) {
+    let name = form['name'].value
+    let price = form['price'].value
+    let buffer = await (await fetch('/static/uploads/'+form['id'].value)).arrayBuffer()
+    let length = buffer.byteLength
+    let chunks = get_chunks(buffer, length)
+    let duration = Math.floor(form.getElementsByTagName("audio")[0].duration)
+    
     return { name, price, length, duration, chunks }
 }
 
-async function upload() {
-    const addr = document.getElementById('contract').value
+async function upload(form, is_approved) {
+    if (is_approved != 'true') return form.submit()
+
+    const addr = form['contract'].value
     const abi = await fetch('/static/abi.json').then(res => res.json())
     const contract = new web3.eth.Contract(abi, addr);
 
     document.getElementById('song_info').innerHTML = "Processing song..."
-    let author = document.getElementById('author').value
-    let song = await get_upload_values()
+    let author = form['author'].value
+    let song = await get_upload_values(form)
     document.getElementById('song_info').innerHTML = `
         <p><b>Author:</b> ${author}</p>
         <p><b>Name:</b> ${song.name}</p>
@@ -96,7 +84,6 @@ async function upload() {
         <p><b>Length:</b> ${song.length}</p>
         <p><b>Chunks:</b> ${song.chunks}</p>
     `
-
     await contract.methods.upload_song(
         author,
         song.name,
@@ -107,8 +94,9 @@ async function upload() {
     ).send({
         from: (await web3.eth.getAccounts())[0]
     })
-}
 
+    form.submit()
+}
 
 if (window.ethereum) {
     //Request access to Metamask accounts

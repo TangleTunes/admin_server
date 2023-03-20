@@ -19,7 +19,24 @@ router.get('/validate', authMiddleware, (req, res) => {
 
     res.render('../views/validator.ejs', {
         username: sanitizeHtml(req.user.username),
-        contract: req.app.get('contract')
+        contract: req.app.get('contract'),
+        songs: req.app.get('songs')
+    });
+});
+
+router.post('/validate', authMiddleware, (req, res) => {
+    if (!req.user.is_validator) {
+        return res.end('Nope! only for validators');
+    }
+    
+    delete req.app.get('songs')[req.body.id]
+    fs.unlinkSync('./static/uploads/'+req.body.id)
+
+    //TODO: add confirmation
+    res.render('../views/validator.ejs', {
+        username: sanitizeHtml(req.user.username),
+        contract: req.app.get('contract'),
+        songs: req.app.get('songs')
     });
 });
 
@@ -34,13 +51,17 @@ router.get('/request', authMiddleware, (req, res) => {
 })
 
 router.post('/request', authMiddleware, upload.single('file'), (req, res) => {
+    if (!req.user.exists) {
+        return res.end('Nope! only for users with tangletunes account');
+    }
+
     req.app.get("songs")[req.file.filename] = {
         "author": req.body.author,
         "name": req.body.name,
         "price": req.body.price
     }
 
-    //TODO: add notification that the song has been uploaded
+    //TODO: add feedback that the song has been uploaded
     res.redirect('/validator/request');
 })
 
