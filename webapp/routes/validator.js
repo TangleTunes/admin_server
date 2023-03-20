@@ -1,4 +1,5 @@
 const authMiddleware = require('../middleware/authMiddleware');
+const fs = require('fs');
 const express = require('express');
 const multer  = require('multer');
 const sanitizeHtml = require('sanitize-html');
@@ -18,7 +19,7 @@ router.get('/validate', authMiddleware, (req, res) => {
 
     res.render('../views/validator.ejs', {
         username: sanitizeHtml(req.user.username),
-        contract: process.env.CONTRACT
+        contract: req.app.get('contract')
     });
 });
 
@@ -33,7 +34,11 @@ router.get('/request', authMiddleware, (req, res) => {
 })
 
 router.post('/request', authMiddleware, upload.single('file'), (req, res) => {
-    console.log(req.file.filename)
+    req.app.get("songs")[req.file.filename] = {
+        "author": req.body.author,
+        "name": req.body.name,
+        "price": req.body.price
+    }
 
     //TODO: add notification that the song has been uploaded
     res.redirect('/validator/request');
@@ -45,7 +50,7 @@ router.get('/register', authMiddleware, (req, res) => {
     }
 
     return res.render('../views/register.ejs', {
-        contract: process.env.CONTRACT
+        contract: req.app.get('contract')
     });
 })
 

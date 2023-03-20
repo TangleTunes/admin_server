@@ -47,13 +47,16 @@ console.log('Waiting for wasp to start...');
 execSync('/bin/bash /app/scripts/create-wallet.sh');
 
 //Proxy traffic to chain's JSON-RPC url
-process.env.CHAIN_ID = JSON.parse(fs.readFileSync('/app/wallet/wasp-cli.json')).chains.tangletunes
+const CHAIN_ID = JSON.parse(fs.readFileSync('/app/wallet/wasp-cli.json')).chains.tangletunes
+app.set("CHAIN_ID", CHAIN_ID)
 app.use("/evm", createProxyMiddleware({
-  target: `http://wasp:9090/chains/${process.env.CHAIN_ID}`
+  target: `http://wasp:9090/chains/${CHAIN_ID}`
 }));
 
 
-process.env.CONTRACT = "0x8fA1fc1Eec824a36fD31497EAa8716Fc9C446d51" //TODO: Remove
+//TODO: Remove
+app.set("contract", "0x8fA1fc1Eec824a36fD31497EAa8716Fc9C446d51")
+app.set("songs", {})
 
 app.all('*', (req, res) => {
 	return res.status(404).send({

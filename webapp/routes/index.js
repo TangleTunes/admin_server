@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
     if (req.session.address) {
-        const user = await get_user(req.session.address)
+        const user = await get_user(req.session.address, req.app)
         //TODO: check if it is deployer and redirect to /admin
         //Create new account if it doesn't have
         if (!user.exists) {

@@ -6,9 +6,9 @@ const router = express.Router();
 
 router.get('/info', async (req, res) => {
     return res.json({
-        "json-rpc": `http://${req.headers.host}:9090/chains/${process.env.CHAIN_ID}/evm`,
+        "json-rpc": `http://${req.headers.host}:9090/chains/${req.app.get('CHAIN_ID')}/evm`,
         "chainID": 1074,
-        "smart-contract": process.env.CONTRACT
+        "smart-contract": req.app.get('contract')
     });
 })
 
@@ -18,7 +18,7 @@ router.get('/faucet/:addr', async (req, res) => {
 })
 
 router.get('/history', async (req, res) => {
-    const provider = new ethers.JsonRpcProvider(`http://wasp:9090/chains/${process.env.CHAIN_ID}/evm`, 1074)
+    const provider = new ethers.JsonRpcProvider(`http://wasp:9090/chains/${req.app.get('CHAIN_ID')}/evm`, 1074)
     const transactions = await provider.getBlock('latest').then(block => block.transactions);
     const txData = await Promise.all(transactions.map(async txHash => {
         const tx = await provider.getTransaction(txHash);

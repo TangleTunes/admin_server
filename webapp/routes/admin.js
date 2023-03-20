@@ -12,8 +12,8 @@ let user = await contract.users(signer.address)
 */
 
 router.get('/contract/set/:address', (req, res) => {
-    process.env.CONTRACT = req.params.address
-    res.json({"contract": process.env.CONTRACT})
+    req.app.set('contract', req.params.address)
+    res.json({"contract": req.app.get('contract')})
 });
 
 module.exports = router;
