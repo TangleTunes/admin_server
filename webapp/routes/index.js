@@ -1,6 +1,5 @@
 const { get_user } = require('../util/tangletunes');
 const { ethers } = require('ethers');
-const sanitizeHtml = require('sanitize-html');
 const express = require('express');
 const crypto = require('crypto');
 
@@ -16,11 +15,10 @@ router.get('/', async (req, res) => {
         }
         //Request song uploads
         if (!user.is_validator) {
-            //TODO: page to request song uploads
-            return res.end(`Welcome to TangleTunes, ${sanitizeHtml(user["username"])}. Request a song upload`)
+            return res.redirect('/validator/request')
         }
         //Upload requested songs as validator
-        return res.redirect('/validator')
+        return res.redirect('/validator/validate')
     }
 
     req.session.nonce = crypto.randomBytes(16).toString('utf8')
