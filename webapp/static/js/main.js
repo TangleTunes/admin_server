@@ -68,6 +68,7 @@ async function get_upload_values(form) {
 
 async function upload(form, is_approved) {
     if (is_approved != 'true') return form.submit()
+    form["approved"].value = 'true'
 
     const addr = form['contract'].value
     const abi = await fetch('/static/abi.json').then(res => res.json())

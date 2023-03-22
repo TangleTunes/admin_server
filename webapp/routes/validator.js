@@ -1,4 +1,5 @@
 const authMiddleware = require('../middleware/authMiddleware');
+const { spawnSync } = require('child_process');
 const fs = require('fs');
 const express = require('express');
 const multer  = require('multer');
@@ -29,6 +30,14 @@ router.post('/validate', authMiddleware, (req, res) => {
         return res.end('Nope! only for validators');
     }
     
+    if (req.body.approved == 'true') {
+        //TODO: check id exists
+        spawnSync("/usr/bin/ttdistributor", ['songs', 'add', `/app/static/uploads/${req.body.id}`], {
+            cwd: "/app/wallet", 
+            stdio: 'inherit'
+        });
+    }
+
     delete req.app.get('songs')[req.body.id]
     fs.unlinkSync('./static/uploads/'+req.body.id)
 

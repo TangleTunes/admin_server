@@ -13,6 +13,7 @@
         <div>
           <form action="/validator/validate" onsubmit="upload(this, event.submitter.value); return false;" method="POST">
             <input id="contract" type="hidden" value="<%= contract %>">
+            <input id="approved" name="approved" type="hidden" value="false">
             <b>ID: </b><input id="id" name="id" type="text" value="<%= id %>" readonly><br>
             <b>Author: </b><input id="author" type="text" value="<%= songs[id].author %>" readonly><br>
             <b>Name: </b><input id="name" type="text" value="<%= songs[id].name %>" readonly><br>

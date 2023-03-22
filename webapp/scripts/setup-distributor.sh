@@ -39,9 +39,6 @@ if ! ttdistributor wallet address &> /dev/null
 then
     echo "Generating wallet address"
     ttdistributor wallet generate --plaintext
-    curl "http://localhost/debug/faucet/`ttdistributor wallet address | cut -d" " -f 3`" &> /dev/null
+    bash /app/scripts/request-funds.sh `ttdistributor wallet address | cut -d" " -f 3`
     ttdistributor account create --name "Validator-Distributor"
 fi
-
-echo "Start distributing"
-ttdistributor distribute

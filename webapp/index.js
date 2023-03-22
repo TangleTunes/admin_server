@@ -1,5 +1,5 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
-const { execSync }  = require('child_process');
+const { spawn, spawnSync }  = require('child_process');
 const cookieSession = require('cookie-session')
 const bodyParser    = require('body-parser');
 const express       = require('express');
@@ -28,7 +28,7 @@ app.use('/validator', require('./routes/validator'));
 app.use('/debug', require('./routes/debug'));
 app.use('/', require('./routes/index'));
 
-async function waitForWasp() {
+const waitForWasp = async () => {
   // wait one second
   await (new Promise(resolve => setTimeout(resolve, 1000)));
   // fetch wasp dashboard until request succeeds
@@ -41,10 +41,12 @@ async function waitForWasp() {
   });
 }
 
+const execute = (bin, args) => spawnSync(bin, args, {stdio: 'inherit', encoding: 'utf-8'})
+
 //Deploy chain once wasp dashboard is active
 console.log('Waiting for wasp to start...');
 (async () => await waitForWasp())()
-execSync('/bin/bash /app/scripts/create-wallet.sh');
+execute('/bin/bash', ['/app/scripts/create-wallet.sh']);
 
 //Proxy traffic to chain's JSON-RPC url
 const CHAIN_ID = JSON.parse(fs.readFileSync('/app/wallet/wasp-cli.json')).chains.tangletunes
@@ -55,8 +57,14 @@ app.use("/evm", createProxyMiddleware({
 
 
 //TODO: Remove
-app.set("contract", "0xa57D405951896582EB0535f7566556FdEd498bD1")
+app.set("contract", "0x8fA1fc1Eec824a36fD31497EAa8716Fc9C446d51")
 app.set("songs", {})
+
+//Start distributor
+//TODO: only run once contract address is confirmed
+execute('/bin/bash', ['/app/scripts/setup-distributor.sh', app.get("CHAIN_ID"), app.get("contract")])
+const distribution = spawn('/usr/bin/ttdistributor', ['distribute'], {cwd: "/app/wallet", stdio: 'inherit'})
+const dist_closed = new Promise(resolve => distribution.on('exit', resolve))
 
 app.all('*', (req, res) => {
 	return res.status(404).send({
@@ -64,4 +72,28 @@ app.all('*', (req, res) => {
 	});
 });
 
-app.listen(80, () => console.log('Server started on port 80'));
+const server = app.listen(80, () => console.log('Server started on port 80'));
+
+// Gracefull shutdown
+const signals = {
+    'SIGHUP': 1,
+    'SIGINT': 2,
+    'SIGTERM': 15
+}
+
+const shutdown = async (value) => {
+    console.log('Deregistering songs.')
+    distribution.kill('SIGINT')
+    await dist_closed
+
+    console.log("shutdown!");
+    server.close(() => process.exit(128 + value))
+};
+
+Object.keys(signals).forEach((signal) => {
+    process.on(signal, async () => {
+        console.log(`process received a ${signal} signal`);
+        await shutdown(signals[signal])
+    });
+});
+
