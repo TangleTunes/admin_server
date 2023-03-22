@@ -14,7 +14,7 @@ COPY . .
 RUN sed -i 's/\r//g' scripts/*.sh
 
 # Install commands
-RUN scripts/install.sh
+RUN bash scripts/install.sh
 
 # Run the web application
 EXPOSE 80

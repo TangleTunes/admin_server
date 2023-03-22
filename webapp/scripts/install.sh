@@ -10,7 +10,7 @@ then
     TTDIST="x86_64-unknown-linux-gnu"
 else
     ARCH="ARM64"
-    TTDIST="None"
+    TTDIST="aarch64-unknown-linux-gnu"
 fi
 
 # Install wasp's command line wallet
