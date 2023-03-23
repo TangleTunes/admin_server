@@ -57,6 +57,7 @@ app.use("/evm", createProxyMiddleware({
 
 
 //TODO: Remove
+//app.set("contract", "0x8fA1fc1Eec824a36fD31497EAa8716Fc9C446d51")
 app.set("contract", "0xa57D405951896582EB0535f7566556FdEd498bD1")
 app.set("songs", {})
 

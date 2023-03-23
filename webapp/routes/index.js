@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
         return res.redirect('/validator/validate')
     }
 
-    req.session.nonce = crypto.randomBytes(16).toString('utf8')
+    req.session.nonce = crypto.randomUUID()
     res.render('../views/index.ejs', {
         nonce: req.session.nonce
     });
@@ -29,9 +29,12 @@ router.get('/', async (req, res) => {
 
 router.post('/', (req, res) => {
     const signature = req.body.signature
-    if (signature) {
-        req.session.address = ethers.verifyMessage(req.session.nonce, signature)
+    const nonce = req.session.nonce
+
+    if (signature && nonce) {
+        req.session.address = ethers.verifyMessage(nonce, signature)
     }
+    
     return res.redirect('/')
 });
 

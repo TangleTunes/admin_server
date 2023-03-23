@@ -9,7 +9,14 @@ const { get_song_id } = require('../util/tangletunes')
 const router = express.Router();
 const storage = multer.diskStorage({
     destination: './static/uploads',
-    filename: (req, file, cb) => cb(null, get_song_id(req.body.name, req.body.author)+'.mp3')
+    filename: (req, file, cb) => {
+        if (!req.body.name || !req.body.author) return cb('missing arguments')
+        try {
+            cb(null, get_song_id(req.body.name, req.body.author)+'.mp3')
+        } catch (error) {
+            cb(`invalid arguments: ${error}`)
+        }
+    }
 });
 const upload = multer({ storage })
 
@@ -29,17 +36,22 @@ router.post('/validate', authMiddleware, (req, res) => {
     if (!req.user.is_validator) {
         return res.end('Nope! only for validators');
     }
+
+    const { approved, id } = req.body
+    if (!approved || !id) return res.end('missing arguments');
+    console.log(`${approved} - ${id}`)
     
-    if (req.body.approved == 'true') {
-        //TODO: check id exists
-        spawnSync("/usr/bin/ttdistributor", ['songs', 'add', `/app/static/uploads/${req.body.id}`], {
+    //TODO: check id is valid file
+    const filepath = `/app/static/uploads/${id}`
+    if (approved == 'true') {
+        spawnSync("/usr/bin/ttdistributor", ['songs', 'add', filepath], {
             cwd: "/app/wallet", 
             stdio: 'inherit'
         });
     }
 
-    delete req.app.get('songs')[req.body.id]
-    fs.unlinkSync('./static/uploads/'+req.body.id)
+    delete req.app.get('songs')[id]
+    fs.unlinkSync(filepath)
 
     //TODO: add confirmation
     res.render('../views/validator.ejs', {
@@ -64,10 +76,15 @@ router.post('/request', authMiddleware, upload.single('file'), (req, res) => {
         return res.end('Nope! only for users with tangletunes account');
     }
 
+    if (!req.file) return res.end('missing mp3 file')
+    
+    const { author, name, price } = req.body
+    if (!author || !name || !price) return res.end('missing arguments')
+
     req.app.get("songs")[req.file.filename] = {
-        "author": req.body.author,
-        "name": req.body.name,
-        "price": req.body.price
+        "author": author,
+        "name": name,
+        "price": price
     }
 
     //TODO: add feedback that the song has been uploaded
