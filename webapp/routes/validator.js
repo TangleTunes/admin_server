@@ -4,15 +4,15 @@ const fs = require('fs');
 const express = require('express');
 const multer  = require('multer');
 const sanitizeHtml = require('sanitize-html');
-const { get_song_id } = require('../util/tangletunes')
+const { get_song_id, get_user } = require('../util/tangletunes')
 
 const router = express.Router();
 const storage = multer.diskStorage({
     destination: './static/uploads',
     filename: (req, file, cb) => {
-        if (!req.body.name || !req.body.author) return cb('missing arguments')
+        if (!req.body.name || !req.body.author_addr) return cb('missing arguments')
         try {
-            cb(null, get_song_id(req.body.name, req.body.author)+'.mp3')
+            cb(null, get_song_id(req.body.name, req.body.author_addr)+'.mp3')
         } catch (error) {
             cb(`invalid arguments: ${error}`)
         }
@@ -67,24 +67,30 @@ router.get('/request', authMiddleware, (req, res) => {
     }
 
     res.render('../views/request.ejs', {
-        username: sanitizeHtml(req.user.username)
+        contract: req.app.get('contract')
     });
 })
 
-router.post('/request', authMiddleware, upload.single('file'), (req, res) => {
+router.post('/request', authMiddleware, upload.single('file'), async (req, res) => {
     if (!req.user.exists) {
         return res.end('Nope! only for users with tangletunes account');
     }
 
     if (!req.file) return res.end('missing mp3 file')
     
-    const { author, name, price } = req.body
-    if (!author || !name || !price) return res.end('missing arguments')
+    const { author_addr, name, price } = req.body
+    if (!author_addr || !name || !price) return res.end('missing arguments')
 
-    req.app.get("songs")[req.file.filename] = {
-        "author": author,
-        "name": name,
-        "price": price
+    try {
+        const author = await get_user(author_addr, req.app)
+        req.app.get("songs")[req.file.filename] = {
+            "author": author_addr,
+            "author_name": author.username,
+            "name": name,
+            "price": price
+        }
+    } catch {
+        return res.end('invalid arguments')
     }
 
     //TODO: add feedback that the song has been uploaded

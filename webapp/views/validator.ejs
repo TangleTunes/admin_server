@@ -1,37 +1,56 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Validator</title>
+    <title>TangleTunes</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="icon" href="/static/favicon.svg">
   </head>
   <body>
-    <h1>Welcome <%= username %></h1>
-    <h1>Upload a song to TangleTunes</h1>
-    
-    <br>
-    <div>
-      <% Object.keys(songs).forEach( function(id) { %>
-        <div>
-          <form action="/validator/validate" onsubmit="upload(this, event.submitter.value); return false;" method="POST">
-            <input id="contract" type="hidden" value="<%= contract %>">
-            <input id="approved" name="approved" type="hidden" value="false">
-            <b>ID: </b><input id="id" name="id" type="text" value="<%= id %>" readonly><br>
-            <b>Author: </b><input id="author" type="text" value="<%= songs[id].author %>" readonly><br>
-            <b>Name: </b><input id="name" type="text" value="<%= songs[id].name %>" readonly><br>
-            <b>Price: </b><input id="price" type="number" value="<%= songs[id].price %>" readonly><br>
-            <br>
-            <audio controls src="/static/uploads/<%= id %>"></audio>
-            <br>
-            <button name="is_approved" type="submit" value="true">Approve</button>
-            <button name="is_approved" type="submit" value="false">Reject</button>
-          </form>
-        </div>
-        <br>
-      <% }); %>
-    </div>
-    <br>
+    <main class="container">
+      <h1 align="center">Welcome <%= username %></h1>
 
-    <div id="song_info">
-    </div>
+      <div>
+        <% Object.keys(songs).forEach( function(id) { %>
+          <details>
+            <summary><%= songs[id].name %> by <%= songs[id].author_name %></summary>
+            <form action="/validator/validate" onsubmit="upload(this, event.submitter); return false;" method="POST">
+              <input id="contract" type="hidden" value="<%= contract %>">
+              <input id="approved" name="approved" type="hidden" value="false">
+              <input id="id" name="id" type="hidden" value="<%= id %>">
+              <div class="grid">
+                <label for="author">
+                  Author's address
+                  <input id="author" type="text" value="<%= songs[id].author %>" readonly>
+                </label>
+                <label for="author_name">
+                  Author's name
+                  <input id="author_name" type="text" value="<%= songs[id].author_name %>" readonly>
+                </label>
+              </div>
+              <div class="grid">
+                <label for="name">
+                  Name
+                  <input id="name" type="text" value="<%= songs[id].name %>" readonly>
+                </label>
+                <label for="price">
+                  Price
+                  <input id="price" type="number" value="<%= songs[id].price %>" readonly>
+                </label>
+              </div>
+              <div align="center">
+                <audio controls src="/static/uploads/<%= id %>"></audio>
+              </div>
+              <br>
+              <div class="grid">
+                <button class="primary" name="is_approved" type="submit" value="true">Approve</button>
+                <button class="secondary" name="is_approved" type="submit" value="false">Reject</button>
+              </div>
+            </form>
+          </details>
+        <% }); %>
+      </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script src="/static/js/main.js"></script>

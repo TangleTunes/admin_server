@@ -1,24 +1,36 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Validator</title>
+    <title>TangleTunes</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="icon" href="/static/favicon.svg">
   </head>
   <body onload="refresh_balance()">
-    <h1>Welcome to TangleTunes</h1>
-    <br><br>
-    <div id="balance"></div>
-    <button id="request_button" type="button" onclick="request_funds()">Request funds</button>
-    <br><br>
-    <form>
-      <input id="contract" type="hidden" value="<%= contract %>">
-      <label for="username">Username</label><br>
-      <input id="username" type="text"></input><br>
-      <label for="description">Description</label><br>
-      <input id="description" type="text"></input><br>
-      <br>
-      <button type="button" onclick="register()">Register</button>
-    </form>
+    <main class="container">
+      <div align="center">
+        <img width="200" src="/static/favicon.svg">
+      </div>
+      <h1 align="center">TangleTunes</h1>
+      <form>
+        <input id="contract" type="hidden" value="<%= contract %>">
+        <label for="username">
+          Username
+          <input id="username" type="text"></input>
+        </label>
+        <label for="description">
+          Description
+          <input id="description" type="text"></input>
+        </label>
+        <button type="button" onclick="register()">Register</button>
+      </form>
+    </main>
 
+    <main class="container">
+      <p align="center" id="balance"></p>
+      <button id="request_button" type="button" onclick="request_funds()">Request funds</button>
+    </main>
+    
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script src="/static/js/main.js"></script>
   </body>

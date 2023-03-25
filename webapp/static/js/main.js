@@ -2,27 +2,35 @@ const CHUNK_SIZE = 32500
 let web3
 let contract
 
+function weiToMiota(value) {
+    res = parseInt(value.toString().slice(0,-12))
+    return res ? res / 1_000_000 : 0
+}
+
 async function login(form) {
     const addr = (await web3.eth.getAccounts())[0]
-    const nonce = document.getElementById("nonce").value
     try {
-        document.getElementById("signature").value = await web3.eth.personal.sign(nonce, addr)
         if (form) {
+            form["signature"].value = await web3.eth.personal.sign(form["nonce"].value, addr)
             return form.submit()
         }
     } catch {}
 }
 
 async function refresh_balance() {
-    const balance = await web3.eth.getBalance((await web3.eth.getAccounts())[0])
-    document.getElementById("balance").innerHTML = `Your current balance is <b>${balance}<\b>`
+    let balance = await web3.eth.getBalance((await web3.eth.getAccounts())[0])
+    balance = weiToMiota(parseInt(balance))
+    document.getElementById("balance").innerHTML = `Your current balance is <b>${balance} Mi</b>`
+    setTimeout(refresh_balance, 1000);
 }
 
 async function request_funds() {
     const button = document.getElementById("request_button")
-    button.innerText = "Requesting..."
+    button.innerText = "Requesting"
+    button.ariaBusy = "true"
 
     await fetch(`/debug/faucet/${(await web3.eth.getAccounts())[0]}`)
+    button.ariaBusy = "false"
     button.innerText = "Requested"
     button.disabled = true
 }
@@ -41,6 +49,32 @@ async function register() {
 
     //Reload Page to be redirected
     window.location.reload()
+}
+
+async function fill_author() {
+    const author = document.getElementById("author_addr")
+    author.value = (await web3.eth.getAccounts())[0]
+    await update_author()
+
+    author.addEventListener('change', update_author)
+}
+
+async function update_author() {
+    const addr = document.getElementById('contract').value
+    const abi = await fetch('/static/abi.json').then(res => res.json())
+    const contract = new web3.eth.Contract(abi, addr);
+
+    const author = document.getElementById("author_addr")
+    const author_name = document.getElementById("author_name")
+    try {
+        const user = await contract.methods.users(author.value).call()
+        author_name.value = user.username
+        author.ariaInvalid = "false"
+    } catch {
+        author_name.value = ""
+        author.ariaInvalid = "true"
+    }
+    
 }
 
 function get_chunks(buffer, len) {
@@ -66,25 +100,22 @@ async function get_upload_values(form) {
     return { name, price, length, duration, chunks }
 }
 
-async function upload(form, is_approved) {
-    if (is_approved != 'true') return form.submit()
+async function upload(form, button) {
+    if (button.value != 'true') return form.submit()
     form["approved"].value = 'true'
+    button.innerText = 'Processing'
+    button.ariaBusy = 'true'
 
     const addr = form['contract'].value
     const abi = await fetch('/static/abi.json').then(res => res.json())
     const contract = new web3.eth.Contract(abi, addr);
 
-    document.getElementById('song_info').innerHTML = "Processing song..."
-    let author = form['author'].value
-    let song = await get_upload_values(form)
-    document.getElementById('song_info').innerHTML = `
-        <p><b>Author:</b> ${author}</p>
-        <p><b>Name:</b> ${song.name}</p>
-        <p><b>Price:</b> ${song.price}</p>
-        <p><b>Duration:</b> ${song.duration}</p>
-        <p><b>Length:</b> ${song.length}</p>
-        <p><b>Chunks:</b> ${song.chunks}</p>
-    `
+    const author = form['author'].value
+    const song = await get_upload_values(form)
+
+    button.innerText = 'Approve'
+    button.ariaBusy = 'false'
+
     await contract.methods.upload_song(
         author,
         song.name,

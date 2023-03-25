@@ -2,22 +2,41 @@
 <html>
   <head>
     <title>TangleTunes</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="icon" href="/static/favicon.svg">
   </head>
-  <body>
-    <h1>Welcome <%= username %></h1>
-    <h1>Upload a song to TangleTunes</h1>
-    <form enctype="multipart/form-data" action="" method="POST">
-      <label for="author">Author:</label><br>
-      <input id="author" type="text" name="author"><br>
-      <label for="name">Name:</label><br>
-      <input id="name" type="text" name="name"><br>
-      <label for="price">Price:</label><br>
-      <input id="price" type="number" name="price"><br>
-      <label for="file">Select file:</label><br>
-      <input id="file" type="file" name="file" accept="audio/mpeg"/><br>
-      <br>
-      <button type="submit">Request</button>
-    </form>
+  <body onload="fill_author()">
+    <main class="container">
+      <h1 align="center">Upload a song to TangleTunes</h1>
+      <form enctype="multipart/form-data" action="" method="POST">
+        <input id="contract" type="hidden" value="<%= contract %>">
+        <div class="grid">
+          <label for="author_addr">
+            Author's address
+            <input id="author_addr" type="text" name="author_addr">
+          </label>
+          <label for="author_name">
+            Author's Name
+            <input id="author_name" type="text" readonly>
+          </div>
+        </div>
+        <label for="name">
+          Name
+          <input id="name" type="text" name="name">
+        </label>
+        <label for="price">
+          Price
+          <input id="price" type="number" name="price">
+        </label>
+        <label for="file">
+          Select file
+          <input id="file" type="file" name="file" accept="audio/mpeg"/>
+        </label>
+        <button type="submit">Request song</button>
+      </form>
+    </main>
+    
     
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script src="/static/js/main.js"></script>
