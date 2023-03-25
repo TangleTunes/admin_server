@@ -24,7 +24,7 @@ then
     rm -r "${WASPCLI}" "${WASPCLI}.tar.gz"
 fi
 
-# Install tangle tunes distributor
+# Install Tangle Tunes distributor's binary
 if ! command -v ttdistributor &> /dev/null
 then
     echo "Installing ttdistributor"
@@ -33,6 +33,10 @@ then
     mv ./tangle-tunes-distributor /usr/bin/ttdistributor
     rm "tangle-tunes-distributor-${TTDIST}.tar.gz"
 fi
+
+# Install Tangle Tunes mobile app's apk
+echo "Installing apk"
+wget "https://drive.google.com/uc?id=1bS2g7Bpey6TnXfZoi0BXZG1X89q8A7Rf&export=download&confirm=t&uuid=4b5a58ad-6a2b-45ed-bebe-4f02e289e988&at=ANzk5s5g4C8gJ0oD0IDPxgen88IJ:1679744140739" -O /app/static/mobile/tangletunes.apk
 
 # Install dig
 if ! command -v dig &> /dev/null
