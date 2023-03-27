@@ -10,7 +10,7 @@ services:
       - "${HOST:-127.0.0.1}:14265:14265/tcp"
       - "${HOST:-127.0.0.1}:8081:8081/tcp"
       - "${HOST:-127.0.0.1}:8091:8091/tcp"
-      - "${HOST:-127.0.0.1}:9029:9029/tcp"
+      - "${HOST:-0.0.0.0}:9029:9029/tcp"
   wasp:
     image: iotaledger/wasp:0.5.0-alpha.6
     container_name: wasp
@@ -25,8 +25,8 @@ services:
     networks:
       - wasp-net
     ports:
-      - "${HOST:-127.0.0.1}:4000:4000/tcp" # Peering
-      - "${HOST:-127.0.0.1}:5550:5550/tcp" # Nano MSG
+      - "${HOST:-0.0.0.0}:4000:4000/tcp" # Peering
+      - "${HOST:-0.0.0.0}:5550:5550/tcp" # Nano MSG
       - "${HOST:-0.0.0.0}:7000:7000/tcp" # Wasp Dashboard
       - "${HOST:-0.0.0.0}:9090:9090/tcp" # Wasp WebAPI
     volumes:
