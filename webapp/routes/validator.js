@@ -39,7 +39,6 @@ router.post('/validate', authMiddleware, (req, res) => {
 
     const { approved, id } = req.body
     if (!approved || !id) return res.end('missing arguments');
-    console.log(`${approved} - ${id}`)
     
     //TODO: check id is valid file
     const filepath = `/app/static/uploads/${id}`
@@ -78,8 +77,8 @@ router.post('/request', authMiddleware, upload.single('file'), async (req, res) 
 
     if (!req.file) return res.end('missing mp3 file')
     
-    const { author_addr, name, price } = req.body
-    if (!author_addr || !name || !price) return res.end('missing arguments')
+    const { author_addr, name, price, contact } = req.body
+    if (!author_addr || !name || !price || !contact) return res.end('missing arguments')
 
     try {
         const author = await get_user(author_addr, req.app)
@@ -87,7 +86,8 @@ router.post('/request', authMiddleware, upload.single('file'), async (req, res) 
             "author": author_addr,
             "author_name": author.username,
             "name": name,
-            "price": price
+            "price": price,
+            "contact": contact
         }
     } catch {
         return res.end('invalid arguments')

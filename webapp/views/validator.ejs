@@ -34,10 +34,14 @@
                   <input id="name" type="text" value="<%= songs[id].name %>" readonly>
                 </label>
                 <label for="price">
-                  Price
-                  <input id="price" type="number" value="<%= songs[id].price %>" readonly>
+                  Price in Mi
+                  <input id="price" type="number" value="<%= songs[id].price %>" step="0.000001" readonly>
                 </label>
               </div>
+              <label for="contact">
+                Contact email address
+                <input id="contact" type="email" value="<%= songs[id].contact %>" readonly>
+              </label>
               <div align="center">
                 <audio controls src="/static/uploads/<%= id %>"></audio>
               </div>

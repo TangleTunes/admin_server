@@ -7,6 +7,10 @@ function weiToMiota(value) {
     return res ? res / 1_000_000 : 0
 }
 
+function MiotaToWei(value) {
+    return Math.round(value * 1e18)
+}
+
 async function login(form) {
     const addr = (await web3.eth.getAccounts())[0]
     try {
@@ -51,12 +55,17 @@ async function register() {
     window.location.reload()
 }
 
-async function fill_author() {
+async function fill_info() {
+    //fill and verify author addres and name 
     const author = document.getElementById("author_addr")
     author.value = (await web3.eth.getAccounts())[0]
     await update_author()
-
     author.addEventListener('change', update_author)
+
+    //verify price
+    await update_price_equiv()
+    document.getElementById("price").addEventListener('change', update_price_equiv)
+    document.getElementById("file").addEventListener('change', update_price_equiv)
 }
 
 async function update_author() {
@@ -77,6 +86,28 @@ async function update_author() {
     
 }
 
+async function update_price_equiv() {
+    const price_equiv = document.getElementById("price_equiv")
+    try {
+        const price = parseFloat(document.getElementById("price").value)
+        const seconds = await get_duration(document.getElementById('file').files[0])
+        price_equiv.ariaInvalid = false
+        price_equiv.value = Number(price /seconds * 60).toFixed(6)
+    } catch {
+        price_equiv.ariaInvalid = true
+        price_equiv.value = "0.00"
+    }
+    
+}
+
+function get_duration(file) {
+    return new Promise((resolve, reject) => {
+        const audio = new Audio(URL.createObjectURL(file));
+        audio.addEventListener('loadedmetadata', () => resolve(Math.round(audio.duration)));
+        audio.addEventListener('error', () => reject(new Error('Error loading MP3 file')));
+    });
+}
+
 function get_chunks(buffer, len) {
     const chunks = [];
     for (let i = 0; i < len; i += CHUNK_SIZE) {
@@ -90,12 +121,12 @@ function get_chunks(buffer, len) {
 }
 
 async function get_upload_values(form) {
-    let name = form['name'].value
-    let price = form['price'].value
-    let buffer = await (await fetch('/static/uploads/'+form['id'].value)).arrayBuffer()
-    let length = buffer.byteLength
-    let chunks = get_chunks(buffer, length)
-    let duration = Math.floor(form.getElementsByTagName("audio")[0].duration)
+    const name = form['name'].value
+    const price = MiotaToWei(parseFloat(form['price'].value)).toString()
+    const buffer = await (await fetch('/static/uploads/'+form['id'].value)).arrayBuffer()
+    const length = buffer.byteLength
+    const chunks = get_chunks(buffer, length)
+    const duration = Math.round(form.getElementsByTagName("audio")[0].duration)
     
     return { name, price, length, duration, chunks }
 }
