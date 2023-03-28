@@ -108,6 +108,31 @@ function get_duration(file) {
     });
 }
 
+async function request(form) {
+    const addr = (await web3.eth.getAccounts())[0]
+    try {
+        if (form) {
+            await web3.eth.personal.sign(
+                //web3.utils.hexToBytes(
+                    web3.utils.soliditySha3(
+                        web3.utils.encodePacked(
+                            {value: form["author_addr"], type: 'string'}, //author
+                            {value: form["name"], type: 'string'}, //name
+                            {value: 123, type: 'uint256'}, //TODO: price
+                            {value: 456, type: 'uint256'}, //TODO: length
+                            {value: 789, type: 'uint256'}, //TODO: duration
+                            {value: [], type: 'bytes32[]'}, //TODO: chunks
+                            {value: 0, type: 'uint256'} //TODO: nonce
+                        )
+                    ),
+                //), 
+                addr
+            );
+            return form.submit()
+        }
+    } catch {}
+}
+
 function get_chunks(buffer, len) {
     const chunks = [];
     for (let i = 0; i < len; i += CHUNK_SIZE) {

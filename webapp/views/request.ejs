@@ -9,7 +9,7 @@
   <body onload="fill_info()">
     <main class="container">
       <h1 align="center">Upload a song to TangleTunes</h1>
-      <form enctype="multipart/form-data" action="" method="POST">
+      <form enctype="multipart/form-data" action="" onsubmit="request(this); return false;" method="POST">
         <input id="contract" type="hidden" value="<%= contract %>">
         <div class="grid">
           <label for="author_addr">
