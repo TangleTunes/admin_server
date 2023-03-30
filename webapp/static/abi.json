@@ -12,17 +12,17 @@
         "type": "uint256"
       },
       {
-        "internalType": "bytes32",
-        "name": "_chunk",
-        "type": "bytes32"
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
       }
     ],
-    "name": "check_chunk",
+    "name": "check_chunks",
     "outputs": [
       {
-        "internalType": "bool",
+        "internalType": "bytes32[]",
         "name": "",
-        "type": "bool"
+        "type": "bytes32[]"
       }
     ],
     "stateMutability": "view",
@@ -66,6 +66,19 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_song",
+        "type": "bytes32"
+      }
+    ],
+    "name": "delete_song",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "delete_user",
     "outputs": [],
@@ -82,14 +95,24 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_song",
-        "type": "bytes32"
+        "internalType": "bytes32[]",
+        "name": "_songs",
+        "type": "bytes32[]"
       },
       {
-        "internalType": "uint256",
-        "name": "_fee",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "_fees",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_dist_index_addresses",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_insert_index_addresses",
+        "type": "address[]"
       }
     ],
     "name": "distribute",
@@ -108,19 +131,14 @@
     "name": "distributions",
     "outputs": [
       {
-        "internalType": "bool",
-        "name": "exists",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      },
-      {
         "internalType": "uint256",
         "name": "fee",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "next_distributor",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -168,6 +186,54 @@
     "name": "edit_server_info",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "_songs",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "address",
+        "name": "_dist_addr",
+        "type": "address"
+      }
+    ],
+    "name": "find_dist_indexes",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "_songs",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_fees",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "find_insert_indexes",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -221,6 +287,110 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "get_author_of_length",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      }
+    ],
+    "name": "get_author_of_song_id",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "get_author_of_songs",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "song_id",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "song_name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "author_name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "length",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "duration",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TangleTunesI.Song_listing[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "_song",
         "type": "bytes32"
@@ -252,14 +422,205 @@
         "internalType": "bytes32",
         "name": "_song",
         "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "_start",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "get_distributors",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "distributor",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "server",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "fee",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TangleTunesI.Distribution_listing[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_song",
+        "type": "bytes32"
+      }
+    ],
+    "name": "get_distributors_length",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "get_holds_rights_to_length",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      }
+    ],
+    "name": "get_holds_rights_to_song_id",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "get_holds_rights_to_songs",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "song_id",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "song_name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "author_name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "length",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "duration",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TangleTunesI.Song_listing[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_song",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_seed",
+        "type": "uint256"
       }
     ],
     "name": "get_rand_distributor",
     "outputs": [
       {
-        "internalType": "address",
+        "components": [
+          {
+            "internalType": "address",
+            "name": "distributor",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "server",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "fee",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TangleTunesI.Distribution_listing",
         "name": "",
-        "type": "address"
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -325,6 +686,134 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "get_validates_length",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      }
+    ],
+    "name": "get_validates_song_id",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "get_validates_songs",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "song_id",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "song_name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "author_name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "length",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "duration",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TangleTunesI.Song_listing[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "_songs",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "address",
+        "name": "_dist_addr",
+        "type": "address"
+      }
+    ],
+    "name": "is_distributing",
+    "outputs": [
+      {
+        "internalType": "bool[]",
+        "name": "",
+        "type": "bool[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_validator",
         "type": "address"
       }
@@ -332,6 +821,19 @@
     "name": "manage_validators",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -387,6 +889,16 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "rightholder",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "validator",
+        "type": "address"
+      },
+      {
         "internalType": "string",
         "name": "name",
         "type": "string"
@@ -405,6 +917,11 @@
         "internalType": "uint256",
         "name": "duration",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "distributors",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -413,9 +930,14 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_song",
-        "type": "bytes32"
+        "internalType": "bytes32[]",
+        "name": "_songs",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_index_addresses",
+        "type": "address[]"
       }
     ],
     "name": "undistribute",
@@ -454,6 +976,16 @@
         "internalType": "bytes32[]",
         "name": "_chunks",
         "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_nonce",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_signature",
+        "type": "bytes"
       }
     ],
     "name": "upload_song",
@@ -509,11 +1041,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
-    "name": "withdraw",
+    "name": "withdraw_to_chain",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -521,9 +1053,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint64",
         "name": "_amount",
-        "type": "uint256"
+        "type": "uint64"
       },
       {
         "components": [
@@ -538,7 +1070,7 @@
         "type": "tuple"
       }
     ],
-    "name": "withdraw",
+    "name": "withdraw_to_tangle",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

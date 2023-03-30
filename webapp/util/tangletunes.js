@@ -10,9 +10,12 @@ function get_contract(app) {
 
 const get_user = async (user, app) => await get_contract(app).users(user)
 
+const get_author_nonce = async (user, app) => await get_contract(app).get_author_of_length(user)
+
 const get_song_id = (name, author) => ethers.solidityPackedKeccak256(["string", "address"], [name, author])
 
 module.exports = {
     get_user,
+    get_author_nonce,
     get_song_id
 };

@@ -4,7 +4,7 @@ const fs = require('fs');
 const express = require('express');
 const multer  = require('multer');
 const sanitizeHtml = require('sanitize-html');
-const { get_song_id, get_user } = require('../util/tangletunes')
+const { get_song_id, get_user, get_author_nonce } = require('../util/tangletunes')
 
 const router = express.Router();
 const storage = multer.diskStorage({
@@ -60,13 +60,18 @@ router.post('/validate', authMiddleware, (req, res) => {
     });
 });
 
-router.get('/request', authMiddleware, (req, res) => {
+router.get('/request', authMiddleware, async (req, res) => {
     if (!req.user.exists) {
         return res.redirect('/validator/register')
     }
 
     res.render('../views/request.ejs', {
-        contract: req.app.get('contract')
+        contract: req.app.get('contract'),
+        author_nonce: await get_author_nonce(req.session.address, req.app),
+        rightholder: {
+            address: req.session.address,
+            name: req.user.username
+        }
     });
 })
 
@@ -77,8 +82,8 @@ router.post('/request', authMiddleware, upload.single('file'), async (req, res) 
 
     if (!req.file) return res.end('missing mp3 file')
     
-    const { author_addr, name, price, contact } = req.body
-    if (!author_addr || !name || !price || !contact) return res.end('missing arguments')
+    const { author_addr, name, price, contact, nonce, sig } = req.body
+    if (!author_addr || !name || !price || !contact || !nonce || !sig) return res.end('missing arguments')
 
     try {
         const author = await get_user(author_addr, req.app)
@@ -87,7 +92,9 @@ router.post('/request', authMiddleware, upload.single('file'), async (req, res) 
             "author_name": author.username,
             "name": name,
             "price": price,
-            "contact": contact
+            "contact": contact,
+            "nonce": nonce,
+            "signature": sig
         }
     } catch {
         return res.end('invalid arguments')

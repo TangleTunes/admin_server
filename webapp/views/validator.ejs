@@ -18,6 +18,9 @@
               <input id="contract" type="hidden" value="<%= contract %>">
               <input id="approved" name="approved" type="hidden" value="false">
               <input id="id" name="id" type="hidden" value="<%= id %>">
+              <input id="nonce" name="nonce" type="hidden" value="<%= songs[id].nonce %>">
+              <input id="sig" name="sig" type="hidden" value="<%= songs[id].signature %>">
+
               <div class="grid">
                 <label for="author">
                   Author's address

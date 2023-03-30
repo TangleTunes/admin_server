@@ -110,32 +110,32 @@ function get_duration(file) {
 
 async function request(form) {
     const addr = (await web3.eth.getAccounts())[0]
-    try {
-        if (form) {
-            await web3.eth.personal.sign(
-                //web3.utils.hexToBytes(
-                    web3.utils.soliditySha3(
-                        web3.utils.encodePacked(
-                            {value: form["author_addr"], type: 'string'}, //author
-                            {value: form["name"], type: 'string'}, //name
-                            {value: 123, type: 'uint256'}, //TODO: price
-                            {value: 456, type: 'uint256'}, //TODO: length
-                            {value: 789, type: 'uint256'}, //TODO: duration
-                            {value: [], type: 'bytes32[]'}, //TODO: chunks
-                            {value: 0, type: 'uint256'} //TODO: nonce
-                        )
-                    ),
-                //), 
+    if (form) {
+       const buffer = await form["file"].files[0].arrayBuffer()
+
+        try {
+            form["sig"].value = await web3.eth.personal.sign(
+                web3.utils.soliditySha3(
+                    web3.utils.encodePacked(
+                        {value: form["author_addr"].value, type: 'address'}, //author
+                        {value: form["name"].value, type: 'string'}, //name
+                        {value: MiotaToWei(parseFloat(form['price'].value)).toString(), type: 'uint256'}, // price
+                        {value: buffer.byteLength, type: 'uint256'}, // length
+                        {value: await get_duration(form["file"].files[0]), type: 'uint256'}, // duration
+                        {value: get_chunks(buffer), type: 'bytes32[]'}, // chunks
+                        {value: parseInt(form["nonce"].value), type: 'uint256'} // nonce
+                    )
+                ),
                 addr
             );
             return form.submit()
-        }
-    } catch {}
+        } catch {}
+    }
 }
 
-function get_chunks(buffer, len) {
+function get_chunks(buffer) {
     const chunks = [];
-    for (let i = 0; i < len; i += CHUNK_SIZE) {
+    for (let i = 0; i < buffer.byteLength; i += CHUNK_SIZE) {
         // Get chunk as hex string
         const chunk_buf = buffer.slice(i, i + CHUNK_SIZE)
         const chunk = '0x'+[...new Uint8Array(chunk_buf)].map(x => x.toString(16).padStart(2,'0')).join('')
@@ -143,17 +143,6 @@ function get_chunks(buffer, len) {
         chunks.push(web3.utils.soliditySha3(chunk));
     }
     return chunks;
-}
-
-async function get_upload_values(form) {
-    const name = form['name'].value
-    const price = MiotaToWei(parseFloat(form['price'].value)).toString()
-    const buffer = await (await fetch('/static/uploads/'+form['id'].value)).arrayBuffer()
-    const length = buffer.byteLength
-    const chunks = get_chunks(buffer, length)
-    const duration = Math.round(form.getElementsByTagName("audio")[0].duration)
-    
-    return { name, price, length, duration, chunks }
 }
 
 async function upload(form, button) {
@@ -166,19 +155,19 @@ async function upload(form, button) {
     const abi = await fetch('/static/abi.json').then(res => res.json())
     const contract = new web3.eth.Contract(abi, addr);
 
-    const author = form['author'].value
-    const song = await get_upload_values(form)
-
     button.innerText = 'Approve'
     button.ariaBusy = 'false'
 
+    const buffer = await (await fetch('/static/uploads/'+form['id'].value)).arrayBuffer()
     await contract.methods.upload_song(
-        author,
-        song.name,
-        song.price,
-        song.length,
-        song.duration,
-        song.chunks
+        form['author'].value,
+        form['name'].value,
+        MiotaToWei(parseFloat(form['price'].value)).toString(),
+        buffer.byteLength,
+        Math.round(form.getElementsByTagName("audio")[0].duration),
+        get_chunks(buffer),
+        form["nonce"].value,
+        form["sig"].value
     ).send({
         from: (await web3.eth.getAccounts())[0]
     })
