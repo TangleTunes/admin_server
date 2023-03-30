@@ -8,7 +8,9 @@ const { get_song_id, get_user, get_author_nonce } = require('../util/tangletunes
 
 const router = express.Router();
 const storage = multer.diskStorage({
-    destination: './static/uploads',
+    destination: (req, file, cb) => {
+        cb(null, '/app/static/uploads')
+    },
     filename: (req, file, cb) => {
         if (!req.body.name || !req.body.author_addr) return cb('missing arguments')
         try {
@@ -18,7 +20,7 @@ const storage = multer.diskStorage({
         }
     }
 });
-const upload = multer({ storage })
+const upload = multer({ storage: storage })
 
 router.get('/validate', authMiddleware, (req, res) => {
     if (!req.user.is_validator) {
