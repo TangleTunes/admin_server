@@ -1,6 +1,5 @@
 const CHUNK_SIZE = 32500
 let web3
-let contract
 
 function weiToMiota(value) {
     res = parseInt(value.toString().slice(0,-12))

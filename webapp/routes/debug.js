@@ -4,6 +4,12 @@ const express      = require('express');
 
 const router = express.Router();
 
+router.get('/songs', (req, res) => {
+    res.render('../views/songs.ejs', {
+        contract: req.app.get('contract')
+    });
+})
+
 router.get('/info', async (req, res) => {
     return res.json({
         "json-rpc": `http://${req.headers.host}:9090/chains/${req.app.get('CHAIN_ID')}/evm`,
