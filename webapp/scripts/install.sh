@@ -36,7 +36,7 @@ fi
 
 # Install Tangle Tunes mobile app's apk
 echo "Installing apk"
-wget "https://drive.google.com/uc?id=1bS2g7Bpey6TnXfZoi0BXZG1X89q8A7Rf&export=download&confirm=t&uuid=4b5a58ad-6a2b-45ed-bebe-4f02e289e988&at=ANzk5s5g4C8gJ0oD0IDPxgen88IJ:1679744140739" -O /app/static/mobile/tangletunes.apk
+wget "https://github.com/TangleTunes/listener/releases/download/v1.0.12/app-release.apk" -O /app/static/mobile/tangletunes.apk
 
 # Install dig
 if ! command -v dig &> /dev/null
