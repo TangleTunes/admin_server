@@ -1,4 +1,4 @@
-FROM node:19
+FROM node:lts-bullseye
 
 # Set Web Application working directory
 RUN mkdir /app

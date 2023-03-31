@@ -7,20 +7,6 @@ const sanitizeHtml = require('sanitize-html');
 const { get_song_id, get_user, get_author_nonce } = require('../util/tangletunes')
 
 const router = express.Router();
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, '/app/static/uploads')
-    },
-    filename: (req, file, cb) => {
-        if (!req.body.name || !req.body.author_addr) return cb('missing arguments')
-        try {
-            cb(null, get_song_id(req.body.name, req.body.author_addr)+'.mp3')
-        } catch (error) {
-            cb(`invalid arguments: ${error}`)
-        }
-    }
-});
-const upload = multer({ storage: storage })
 
 router.get('/validate', authMiddleware, (req, res) => {
     if (!req.user.is_validator) {
@@ -77,7 +63,21 @@ router.get('/request', authMiddleware, async (req, res) => {
     });
 })
 
-router.post('/request', authMiddleware, upload.single('file'), async (req, res) => {
+router.post('/request', authMiddleware, multer({
+    storage: multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, '/app/static/uploads')
+        },
+        filename: function (req, file, cb) {
+            if (!req.body.name || !req.body.author_addr) return cb('missing arguments')
+            try {
+                cb(null, get_song_id(req.body.name, req.body.author_addr)+'.mp3')
+            } catch (error) {
+                cb(`invalid arguments: ${error}`)
+            }
+        }
+    }) 
+}).single('file'), async (req, res) => {
     if (!req.user.exists) {
         return res.end('Nope! only for users with tangletunes account');
     }
