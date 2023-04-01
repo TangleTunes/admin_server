@@ -3,7 +3,6 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const express = require('express');
 const multer  = require('multer');
-const sanitizeHtml = require('sanitize-html');
 const { get_song_id, get_user, get_author_nonce } = require('../util/tangletunes')
 
 const router = express.Router();
@@ -14,7 +13,7 @@ router.get('/validate', authMiddleware, (req, res) => {
     }
 
     res.render('../views/validator.ejs', {
-        username: sanitizeHtml(req.user.username),
+        username: req.user.username,
         contract: req.app.get('contract'),
         songs: req.app.get('songs')
     });
@@ -42,7 +41,7 @@ router.post('/validate', authMiddleware, (req, res) => {
 
     //TODO: add confirmation
     res.render('../views/validator.ejs', {
-        username: sanitizeHtml(req.user.username),
+        username: req.user.username,
         contract: req.app.get('contract'),
         songs: req.app.get('songs')
     });

@@ -1,4 +1,3 @@
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const { spawn, spawnSync }  = require('child_process');
 const cookieSession = require('cookie-session')
 const bodyParser    = require('body-parser');
@@ -48,13 +47,9 @@ console.log('Waiting for wasp to start...');
 (async () => await waitForWasp())()
 execute('/bin/bash', ['/app/scripts/create-wallet.sh']);
 
-//Proxy traffic to chain's JSON-RPC url
+//Store chain id in application's memory
 const CHAIN_ID = JSON.parse(fs.readFileSync('/app/wallet/wasp-cli.json')).chains.tangletunes
 app.set("CHAIN_ID", CHAIN_ID)
-app.use("/evm", createProxyMiddleware({
-  target: `http://wasp:9090/chains/${CHAIN_ID}`
-}));
-
 
 //TODO: Remove
 app.set("contract", "0x8fA1fc1Eec824a36fD31497EAa8716Fc9C446d51")
