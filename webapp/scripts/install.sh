@@ -28,7 +28,7 @@ fi
 if ! command -v ttdistributor &> /dev/null
 then
     echo "Installing ttdistributor"
-    wget "https://github.com/TangleTunes/distributing_client/releases/download/v0.0.6/tangle-tunes-distributor-${TTDIST}.tar.gz"
+    wget "https://github.com/TangleTunes/distributing_client/releases/download/v0.0.7/tangle-tunes-distributor-${TTDIST}.tar.gz"
     tar -xzvf "tangle-tunes-distributor-${TTDIST}.tar.gz"
     mv ./tangle-tunes-distributor /usr/bin/ttdistributor
     rm "tangle-tunes-distributor-${TTDIST}.tar.gz"

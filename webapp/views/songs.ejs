@@ -3,24 +3,36 @@
   <head>
     <title>TangleTunes</title>
     <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <link href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" rel="stylesheet"/>
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="icon" href="/static/favicon.svg">
+
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
   </head>
-  <body onload="fill_songs()">
+  <body onload="load_containers()">
     <main class="container">
         <input id="contract" type="hidden" value="<%= contract %>">
 
       <h1 align="center">Select song</h1>
-      <select id="songs" onchange="update_distributors(this.value)">
+      <select id="songs" onchange="change_song(this.value)">
         <option value="" disabled selected>Select</option>
         <option value="0x885ce500a4D38649A9a8e3B533d7b8a3A253651A">AA by lo</option>
       </select>
-      
-      <div id="distributors"></div>
     </main>
-    
-    
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <script src="/static/js/songs.js"></script>
+
+    <main style="width: 90%; height:75vh;">
+      <div class="grid" style="height: 100%;">
+        <div id="osm-map"></div>
+        <article id="distributors" style="
+                height:100%;
+                margin: 0;
+                overflow-y: auto;
+                ">
+        </article>
+      </div>
+  </main>
+
+  <script src="/static/js/songs.js"></script>
   </body>
 </html>
