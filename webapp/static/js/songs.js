@@ -25,13 +25,14 @@ const HoverIcon = L.divIcon({
     iconAnchor: [0, 0],
     html: `<span style="
                 background-color: #fe741e;
-                width: 2rem;
-                height: 2rem;
-                left: -1rem;
-                top: -1rem;
+                width: 1.5rem;
+                height: 1.5rem;
+                left: -0.75rem;
+                top: -1.75rem;
                 position: relative;
                 display: block;
-                border-radius: 3rem 3rem 3rem;
+                border-radius: 3rem 3rem 0rem;
+                transform: rotate(45deg);
                 "
             />`
 })
