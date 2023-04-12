@@ -84,10 +84,18 @@ function change_marker(id, m) {
 
 function focus_marker(id) {
     if (focused_marker != id) {
-        if (focused_marker) change_marker(focused_marker, DefaultIcon)
+        if (focused_marker != undefined) change_marker(focused_marker, DefaultIcon)
         change_marker(id, HoverIcon)
         map.setView(markers[id].location,4)
         focused_marker = id
+    }
+}
+
+function unfocus() {
+    if (focused_marker != undefined) {
+        change_marker(focused_marker, DefaultIcon)
+        map.setView([50,15],3)
+        focused_marker = undefined
     }
 }
 
@@ -99,7 +107,7 @@ async function fill_distributors(song_id) {
     for (let i = 0; i < distributors.length; i++) {
         const username = (await contract.methods.users(distributors[i].distributor).call()).username
         articles += `
-        <button class="secondary" onmouseover="focus_marker(${i})">
+        <button class="secondary" onmouseenter="focus_marker(${i})">
             <div class="grid">
                 <div>
                     <b>${username}</b> (${distributors[i].distributor.slice(0,6)}...)
