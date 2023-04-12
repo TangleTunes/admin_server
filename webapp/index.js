@@ -22,7 +22,7 @@ app.use(cookieSession({
 
 app.use('/static', express.static(path.resolve('static')));
 
-app.use('/admin', require('./routes/admin'));
+app.use('/browse', require('./routes/browse'));
 app.use('/validator', require('./routes/validator'));
 app.use('/debug', require('./routes/debug'));
 app.use('/', require('./routes/index'));

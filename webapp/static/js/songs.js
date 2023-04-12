@@ -121,7 +121,7 @@ async function fill_distributors(song_id) {
             </div>
         </button>
         `
-        add_map_marker(distributors[i].server.split(":")[1])
+        add_map_marker(distributors[i].server.split(":")[0])
     }
     document.getElementById("distributors").innerHTML = articles
 }
