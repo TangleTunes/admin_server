@@ -78,10 +78,14 @@ async function change_song(song_id) {
     await fill_distributors(song_id)
 }
 
+function change_marker(id, m) {
+    markers[id].marker = markers[id].maker.setIcon(m)
+}
+
 function focus_marker(id) {
     if (focused_marker != id) {
-        if (focused_marker) markers[focused_marker].marker.setIcon(DefaultIcon)
-        markers[id].maker.setIcon(HoverIcon)
+        if (focused_marker) change_marker(focused_marker, DefaultIcon)
+        change_marker(id, HoverIcon)
         map.setView(markers[id].location,4)
         focused_marker = id
     }
