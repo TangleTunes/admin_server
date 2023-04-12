@@ -121,25 +121,22 @@ async function fill_distributors(song_id) {
             </div>
         </button>
         `
-        add_map_marker(distributors[i].server.split(":")[0])
+        await add_map_marker(distributors[i].server.split(":")[0])
     }
     document.getElementById("distributors").innerHTML = articles
 }
 
-function add_map_marker(ip, id) {
-    fetch(`http://www.geoplugin.net/json.gp?ip=${ip}`)
-        .then(res => res.json())
-        .then(data => {
-            const location = [data.geoplugin_latitude, data.geoplugin_longitude]
-            const marker = L.marker(location, {
-                icon: DefaultIcon
-            }).addTo(map);
+async function add_map_marker(ip) {
+    const data = await fetch(`http://www.geoplugin.net/json.gp?ip=${ip}`).then(res => res.json())
+    const location = [data.geoplugin_latitude, data.geoplugin_longitude]
+    const marker = L.marker(location, {
+        icon: DefaultIcon
+    }).addTo(map);
 
-            markers.push({
-                maker: marker,
-                location: location
-            })
-        })
+    markers.push({
+        maker: marker,
+        location: location
+    })
 }
 
 if (window.ethereum) {
