@@ -39,19 +39,30 @@ async function request_funds() {
 }
 
 async function register() {
+    const button = document.getElementById("register_button")
+    button.ariaBusy = "true"
+    button.innerText = "Sign transaction"
+
     const addr = document.getElementById('contract').value
     const abi = await fetch('/static/abi.json').then(res => res.json())
     const contract = new web3.eth.Contract(abi, addr);
 
-    await contract.methods.create_user(
-        document.getElementById("username").value,
-        document.getElementById("description").value,
-    ).send({
-        from: (await web3.eth.getAccounts())[0]
-    })
-
-    //Reload Page to be redirected
-    window.location.reload()
+    try {
+        await contract.methods.create_user(
+            document.getElementById("username").value,
+            document.getElementById("description").value,
+        ).send({
+            from: (await web3.eth.getAccounts())[0]
+        })
+        
+        //redirect to request page
+        button.innerText = "Registering"
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        window.location = "/validator/request";
+    } catch {
+        button.ariaBusy = "false"
+        button.innerText = "Register"
+    }
 }
 
 async function fill_info() {

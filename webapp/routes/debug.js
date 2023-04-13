@@ -19,11 +19,11 @@ router.get('/faucet', async (req, res) => {
 })
 
 router.get('/faucet/:addr', async (req, res) => {
-    process = spawnSync("/bin/bash", ["/app/scripts/request-funds.sh", req.params.addr]);
+    const child = spawnSync("/bin/bash", ["/app/scripts/request-funds.sh", req.params.addr]);
     res.render('../views/faucet.ejs', {
         addr: req.params.addr,
         requested: true,
-        error: process.stderr.toString()
+        error: child.stderr.toString()
     });
 })
 

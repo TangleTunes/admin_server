@@ -9,7 +9,7 @@
   <body onload="fill_info()">
     <main class="container">
       <h1 align="center">Upload a song to TangleTunes</h1>
-      <form enctype="multipart/form-data" action="" onsubmit="request(this); return false;" method="POST">
+      <form enctype="multipart/form-data" action="/validator/request" onsubmit="request(this); return false;" method="POST">
         <input id="contract" type="hidden" value="<%= contract %>">
 
         <input id="nonce" type="hidden" name="nonce" value="<%= author_nonce %>">
