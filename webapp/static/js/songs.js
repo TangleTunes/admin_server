@@ -76,7 +76,23 @@ async function change_song(song_id) {
     focused_marker = undefined
     map.setView([50,15],3)
 
+    document.getElementById("distributors").innerHTML = ""
     await fill_distributors(song_id)
+
+    //Keep updating until song changes again
+    setTimeout(() => {update_loop(song_id)}, 500)
+}
+
+async function update_loop(song_id) {
+    //stop loop if selected song changed
+    if (document.getElementById("songs").value != song_id) return
+
+    const size = await contract.methods.get_distributors_length(song_id).call()
+    if (size != markers.length) {
+        change_song(song_id)
+    } else {
+        setTimeout(() => {update_loop(song_id)}, 500)
+    }
 }
 
 function change_marker(id, m) {
@@ -102,6 +118,8 @@ function unfocus() {
 
 async function fill_distributors(song_id) {
     const distributors_size = await contract.methods.get_distributors_length(song_id).call()
+    if (distributors_size == 0) return
+    
     const distributors = await contract.methods.get_distributors(song_id, "0x0000000000000000000000000000000000000000", distributors_size).call()
 
     let articles = '\n'
