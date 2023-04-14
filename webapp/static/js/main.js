@@ -11,13 +11,19 @@ function MiotaToWei(value) {
 }
 
 async function login(form) {
+    if (!form) return
+    button = form["submit_button"]
+    button.ariaBusy = "true"
+    button.innerText = "Sign nonce"
+
     const addr = (await web3.eth.getAccounts())[0]
     try {
-        if (form) {
-            form["signature"].value = await web3.eth.personal.sign(form["nonce"].value, addr)
-            return form.submit()
-        }
-    } catch {}
+        form["signature"].value = await web3.eth.personal.sign(form["nonce"].value, addr)
+        return form.submit()
+    } catch {
+        button.ariaBusy = "false"
+        button.innerText = "Sign in"
+    }
 }
 
 async function refresh_balance() {
@@ -119,27 +125,32 @@ function get_duration(file) {
 }
 
 async function request(form) {
-    const addr = (await web3.eth.getAccounts())[0]
-    if (form) {
-       const buffer = await form["file"].files[0].arrayBuffer()
+    if (!form) return
+    button = form["submit_button"]
+    button.ariaBusy = "true"
+    button.innerText = "Sign request"
 
-        try {
-            form["sig"].value = await web3.eth.personal.sign(
-                web3.utils.soliditySha3(
-                    web3.utils.encodePacked(
-                        {value: form["author_addr"].value, type: 'address'}, //author
-                        {value: form["name"].value, type: 'string'}, //name
-                        {value: MiotaToWei(parseFloat(form['price'].value)).toString(), type: 'uint256'}, // price
-                        {value: buffer.byteLength, type: 'uint256'}, // length
-                        {value: await get_duration(form["file"].files[0]), type: 'uint256'}, // duration
-                        {value: get_chunks(buffer), type: 'bytes32[]'}, // chunks
-                        {value: parseInt(form["nonce"].value), type: 'uint256'} // nonce
-                    )
-                ),
-                addr
-            );
-            return form.submit()
-        } catch {}
+    const addr = (await web3.eth.getAccounts())[0]
+    const buffer = await form["file"].files[0].arrayBuffer()
+    try {
+        form["sig"].value = await web3.eth.personal.sign(
+            web3.utils.soliditySha3(
+                web3.utils.encodePacked(
+                    {value: form["author_addr"].value, type: 'address'}, //author
+                    {value: form["name"].value, type: 'string'}, //name
+                    {value: MiotaToWei(parseFloat(form['price'].value)).toString(), type: 'uint256'}, // price
+                    {value: buffer.byteLength, type: 'uint256'}, // length
+                    {value: await get_duration(form["file"].files[0]), type: 'uint256'}, // duration
+                    {value: get_chunks(buffer), type: 'bytes32[]'}, // chunks
+                    {value: parseInt(form["nonce"].value), type: 'uint256'} // nonce
+                )
+            ),
+            addr
+        );
+        return form.submit()
+    } catch {
+        button.ariaBusy = "false"
+        button.innerText = "Request song"
     }
 }
 
@@ -158,31 +169,32 @@ function get_chunks(buffer) {
 async function upload(form, button) {
     if (button.value != 'true') return form.submit()
     form["approved"].value = 'true'
-    button.innerText = 'Processing'
+    button.innerText = 'Sign transaction'
     button.ariaBusy = 'true'
 
     const addr = form['contract'].value
     const abi = await fetch('/static/abi.json').then(res => res.json())
     const contract = new web3.eth.Contract(abi, addr);
 
-    button.innerText = 'Approve'
-    button.ariaBusy = 'false'
-
     const buffer = await (await fetch('/static/uploads/'+form['id'].value)).arrayBuffer()
-    await contract.methods.upload_song(
-        form['author'].value,
-        form['name'].value,
-        MiotaToWei(parseFloat(form['price'].value)).toString(),
-        buffer.byteLength,
-        Math.round(form.getElementsByTagName("audio")[0].duration),
-        get_chunks(buffer),
-        form["nonce"].value,
-        form["sig"].value
-    ).send({
-        from: (await web3.eth.getAccounts())[0]
-    })
-
-    form.submit()
+    try {
+        await contract.methods.upload_song(
+            form['author'].value,
+            form['name'].value,
+            MiotaToWei(parseFloat(form['price'].value)).toString(),
+            buffer.byteLength,
+            Math.round(form.getElementsByTagName("audio")[0].duration),
+            get_chunks(buffer),
+            form["nonce"].value,
+            form["sig"].value
+        ).send({
+            from: (await web3.eth.getAccounts())[0]
+        })
+        return form.submit()
+    } catch {
+        button.innerText = 'Approve'
+        button.ariaBusy = 'false'
+    }
 }
 
 if (window.ethereum) {
