@@ -124,6 +124,12 @@ function get_duration(file) {
     });
 }
 
+function song_price_to_chunk_price(price, length) {
+    const p = MiotaToWei(parseFloat(price))
+    const chunks = Math.floor(length/CHUNK_SIZE)
+    return Math.floor(p/chunks).toString()
+}
+
 async function request(form) {
     if (!form) return
     button = form["submit_button"]
@@ -138,7 +144,7 @@ async function request(form) {
                 web3.utils.encodePacked(
                     {value: form["author_addr"].value, type: 'address'}, //author
                     {value: form["name"].value, type: 'string'}, //name
-                    {value: MiotaToWei(parseFloat(form['price'].value)).toString(), type: 'uint256'}, // price
+                    {value: song_price_to_chunk_price(form['price'].value, buffer.byteLength), type: 'uint256'}, // price
                     {value: buffer.byteLength, type: 'uint256'}, // length
                     {value: await get_duration(form["file"].files[0]), type: 'uint256'}, // duration
                     {value: get_chunks(buffer), type: 'bytes32[]'}, // chunks
@@ -181,7 +187,7 @@ async function upload(form, button) {
         await contract.methods.upload_song(
             form['author'].value,
             form['name'].value,
-            MiotaToWei(parseFloat(form['price'].value)).toString(),
+            song_price_to_chunk_price(form['price'].value, buffer.byteLength),
             buffer.byteLength,
             Math.round(form.getElementsByTagName("audio")[0].duration),
             get_chunks(buffer),
