@@ -98,14 +98,14 @@ async function update_loop(song_id) {
 }
 
 function change_marker(id, m) {
-    markers[id].marker = markers[id].maker.setIcon(m)
+    if (markers[id].marker) markers[id].marker = markers[id].marker.setIcon(m)
 }
 
 function focus_marker(id) {
     if (focused_marker != id) {
         if (focused_marker != undefined) change_marker(focused_marker, DefaultIcon)
         change_marker(id, HoverIcon)
-        map.setView(markers[id].location,4)
+        if (markers[id].location) map.setView(markers[id].location, 4)
         focused_marker = id
     }
 }
@@ -156,26 +156,28 @@ async function fill_distributors(song_id) {
             </div>
         </button>
         `
-        try {
-            await add_map_marker(distributors[i].server.split(":")[0])
-        } catch (error) {
-            console.log(`Marker for ${distributors[i].distributor} could not be place: ${error}`)
-        }
+
+        await add_map_marker(distributors[i].server.split(":")[0])
     }
     document.getElementById("distributors").innerHTML = articles
 }
 
 async function add_map_marker(ip) {
-    const data = await fetch(`http://www.geoplugin.net/json.gp?ip=${ip}`).then(res => res.json())
-    const location = [data.geoplugin_latitude, data.geoplugin_longitude]
-    const marker = L.marker(location, {
-        icon: DefaultIcon
-    }).addTo(map);
+    try {
+        const data = await fetch(`http://www.geoplugin.net/json.gp?ip=${ip}`).then(res => res.json())
+        const location = [data.geoplugin_latitude, data.geoplugin_longitude]
+        const marker = L.marker(location, {
+            icon: DefaultIcon
+        }).addTo(map);
 
-    markers.push({
-        maker: marker,
-        location: location
-    })
+        markers.push({
+            marker: marker,
+            location: location
+        })
+    } catch (error) {
+        console.log(`Marker for ${ip} could not be placed: ${error}`)
+        markers.push({})
+    }
 }
 
 if (window.ethereum) {
