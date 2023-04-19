@@ -136,10 +136,17 @@ async function fill_distributors(song_id) {
     if (distributors_size == 0) return
     
     const distributors = await contract.methods.get_distributors(song_id, "0x0000000000000000000000000000000000000000", distributors_size).call()
-    const song_duration = (await contract.methods.songs(song_id).call()).duration
+    const song = await contract.methods.songs(song_id).call()
     const song_chunks = await contract.methods.chunks_length(song_id).call()
+    const author_name = (await contract.methods.users(song.author).call()).username
 
-    let articles = '\n'
+    let articles = `
+    <article style="padding: 0; margin-top: 0">
+        <p align="center" style="margin-bottom: 0"><b>${song.name}</b></p>
+        Author: <b>${author_name}</b> (${song.author.slice(0,6)}...) <br>
+        Price: <b>${chunk_fee_to_song(song.price, song.duration, song_chunks)} Mi/min</b>
+    </article>
+    `
     for (let i = 0; i < distributors.length; i++) {
         const username = (await contract.methods.users(distributors[i].distributor).call()).username
         articles += `
@@ -151,7 +158,7 @@ async function fill_distributors(song_id) {
                     ${distributors[i].server}
                 </div>
                 <div align="center">
-                    <h2 style="margin-bottom: 0;">${chunk_fee_to_song(distributors[i].fee, song_duration, song_chunks)} Mi/min</h2>
+                    <h2 style="margin-bottom: 0;">${chunk_fee_to_song(distributors[i].fee, song.duration, song_chunks)} Mi/min</h2>
                 </div>
             </div>
         </button>
