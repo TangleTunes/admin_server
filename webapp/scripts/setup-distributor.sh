@@ -29,7 +29,7 @@ echo "Generating toml file"
 echo "server_address = \"`dig +short txt ch whoami.cloudflare @1.0.0.1 | sed 's/"//g'`:3000\"" > TangleTunes.toml
 echo "bind_address = \"0.0.0.0:3000\"" >> TangleTunes.toml
 echo "database_path = \"./database\"" >> TangleTunes.toml
-echo "fee = 1" >> TangleTunes.toml
+echo "fee = 500" >> TangleTunes.toml
 echo "node_url = \"http://wasp:9090/chains/${CHAIN}/evm\"" >> TangleTunes.toml
 echo "chain_id = 1074" >> TangleTunes.toml
 echo "contract_address = \"${CONTRACT}\"" >> TangleTunes.toml
