@@ -156,7 +156,11 @@ async function fill_distributors(song_id) {
             </div>
         </button>
         `
-        await add_map_marker(distributors[i].server.split(":")[0])
+        try {
+            await add_map_marker(distributors[i].server.split(":")[0])
+        } catch (error) {
+            console.log(`Marker for ${distributors[i].distributor} could not be place: ${error}`)
+        }
     }
     document.getElementById("distributors").innerHTML = articles
 }
