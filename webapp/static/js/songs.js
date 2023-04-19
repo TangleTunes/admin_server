@@ -121,9 +121,9 @@ function weiToMiota(value) {
     return res ? res / 1_000_000 : 0
 }
 
-function chunk_fee_to_song(value, duration) {
+function chunk_fee_to_song(value, duration, chunks) {
     try {
-        return Number(weiToMiota(value) / duration * 60).toFixed(6)
+        return Number(weiToMiota(value) * chunks / duration * 60).toFixed(6)
     } catch {
         return 0.0
     }
@@ -135,6 +135,7 @@ async function fill_distributors(song_id) {
     
     const distributors = await contract.methods.get_distributors(song_id, "0x0000000000000000000000000000000000000000", distributors_size).call()
     const song_duration = (await contract.methods.songs(song_id).call()).duration
+    const song_chunks = await contract.methods.chunks_length(song_id).call()
 
     let articles = '\n'
     for (let i = 0; i < distributors.length; i++) {
@@ -148,7 +149,7 @@ async function fill_distributors(song_id) {
                     ${distributors[i].server}
                 </div>
                 <div align="center">
-                    <h2 style="margin-bottom: 0;">${chunk_fee_to_song(distributors[i].fee, song_duration)} Mi/min</h2>
+                    <h2 style="margin-bottom: 0;">${chunk_fee_to_song(distributors[i].fee, song_duration, song_chunks)} Mi/min</h2>
                 </div>
             </div>
         </button>
