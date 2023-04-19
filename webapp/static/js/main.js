@@ -113,7 +113,6 @@ async function update_price_equiv() {
         price_equiv.ariaInvalid = true
         price_equiv.value = "0.00"
     }
-    
 }
 
 function get_duration(file) {
