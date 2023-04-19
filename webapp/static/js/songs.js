@@ -43,6 +43,8 @@ function load_containers() {
 }
 
 async function fill_songs() {
+    if (!contract) return setTimeout(fill_songs, 200)
+
     const songs_size = await contract.methods.song_list_length().call()
     const songs = await contract.methods.get_songs(0, songs_size).call()
 

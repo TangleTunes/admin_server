@@ -217,5 +217,7 @@ if (window.ethereum) {
         window.location.reload()
       })
 } else {
-    alert('Metamask is not connected to tangletunes')
+    try {
+        document.getElementById("submit_button").disabled = true
+    } catch { }
 }
