@@ -7,10 +7,10 @@ services:
     networks:
       - wasp-net
     ports:
-      - "${HOST:-127.0.0.1}:14265:14265/tcp"
-      - "${HOST:-127.0.0.1}:8081:8081/tcp"
-      - "${HOST:-127.0.0.1}:8091:8091/tcp"
-      - "${HOST:-0.0.0.0}:9029:9029/tcp"
+      - "${HOST:-127.0.0.1}:14265:14265/tcp"  # Hornet API
+      - "${HOST:-127.0.0.1}:8081:8081/tcp"    # Hornet Dashboard
+      - "${HOST:-127.0.0.1}:8091:8091/tcp"    # Faucet
+      - "${HOST:-0.0.0.0}:9029:9029/tcp"      # Hornet INX
   wasp:
     image: iotaledger/wasp:0.5.0-alpha.6
     container_name: wasp
@@ -40,8 +40,8 @@ services:
     networks:
       - wasp-net
     ports:
-      - "${HOST:-0.0.0.0}:80:80/tcp" # validar Website
-      - "${HOST:-0.0.0.0}:3000:3000/tcp" # Distributor
+      - "${HOST:-0.0.0.0}:80:80/tcp"      # Validator Website
+      - "${HOST:-0.0.0.0}:3000:3000/tcp"  # Distributor
     volumes:
       - validator-wallet:/app/wallet
 

@@ -60,7 +60,7 @@ async function register() {
         ).send({
             from: (await web3.eth.getAccounts())[0]
         })
-        
+
         //redirect to request page
         button.innerText = "Registering"
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -72,7 +72,7 @@ async function register() {
 }
 
 async function fill_info() {
-    //fill and verify author addres and name 
+    //fill and verify author addres and name
     const author = document.getElementById("author_addr")
     author.value = (await web3.eth.getAccounts())[0]
     await update_author()
@@ -99,7 +99,6 @@ async function update_author() {
         author_name.value = ""
         author.ariaInvalid = "true"
     }
-    
 }
 
 async function update_price_equiv() {
@@ -153,7 +152,8 @@ async function request(form) {
             addr
         );
         return form.submit()
-    } catch {
+    } catch (error) {
+        console.log(error)
         button.ariaBusy = "false"
         button.innerText = "Request song"
     }
