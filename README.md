@@ -11,11 +11,12 @@ More information about the chain deployed can be found in the wasp node dashboar
 Once the smart contract has been deployed the website must be restarted using the following commands:
 1. Remove the current distributor information 
 ```
-docker compose exec validator -it "rm wallet/TangleTunes.toml wallet/database"
+docker compose exec -it validator bash
+# rm wallet/TangleTunes.toml wallet/database
 ```
 2. Rebuild and deploy the website container
 ```
-docker compose up -d validator --build
+ docker compose build validator --no-cache && docker compose up validator -d
 ```
 
 ## License
